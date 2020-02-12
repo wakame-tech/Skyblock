@@ -1,0 +1,13 @@
+# Minecraft Data
+data/
+!data/void/advancements
+!data/void/datapacks
+!data/server.properties
+
+# Gradle Project
+.gradle
+.idea
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache

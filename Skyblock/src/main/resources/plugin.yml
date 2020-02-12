@@ -1,0 +1,4 @@
+name: Skyblock
+version: @version@
+main: tech.wakame.skyblock.Skyblock
+api-version: 1.13

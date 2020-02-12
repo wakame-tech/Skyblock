@@ -1,0 +1,13 @@
+version: '3'
+services:
+    spigot-server:
+        image: nimmis/spigot
+        ports:
+            - "25565:25565"
+        volumes:
+            - ./data:/minecraft
+        stdin_open: true
+        environment: 
+            "EULA": "true"
+            "SPIGOT_VER": "latest"
+            "MC_MAXMEM": "4g"
