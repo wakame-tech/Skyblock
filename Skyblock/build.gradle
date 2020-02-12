@@ -1,11 +1,18 @@
-apply plugin: 'java'
-apply plugin: 'kotlin'
+buildscript {
+    ext.kotlin_version = '1.3.61'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
-group = pluginGroup
-version = pluginVersion
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+plugins {
+    id 'idea'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.10'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
 
 repositories {
     mavenCentral()
@@ -17,12 +24,67 @@ repositories {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
+    maven {
+        url 'https://maven.sk89q.com/repo/'
+    }
+    maven {
+        url 'http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn/'
+    }
+}
+
+group = pluginGroup
+version = pluginVersion
+
+configurations {
+    embed
+    compile.extendsFrom(embed)
 }
 
 dependencies {
     // testCompile group: 'junit', name: 'junit', version: '4.12'
-    compileOnly 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile group: 'org.spigotmc', name: 'spigot-api', version: '1.15.2-R0.1-SNAPSHOT'
+    // for use WorldEdit API
+    // How to do external dependency
+    compile group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.1.1-SNAPSHOT'
+    classpath group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.1.1-SNAPSHOT'
+    // for use Fawe API
+    compile group: 'com.boydti', name: 'fawe-api', version: 'latest'
+    classpath group: 'com.boydti', name: 'fawe-api', version: 'latest'
+    // for use kotlin stdlib
+    // implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // def kotlin_version = '1.3.61'
+    embed "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // embed "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+jar {
+    // https://tumblr.nqlab.com/post/113696772279/jar%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%AE%9F%E8%A1%8C%E6%99%82%E3%81%ABjavalangsecurityexception%E7%99%BA%E7%94%9F
+    // exclude 'plugin.yml'
+
+    manifest {
+        attributes 'Main-Class': 'tech.wakame.skyblock.Skyblock'
+    }
+
+    from {
+        configurations.embed.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -30,25 +92,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         filter ReplaceTokens, tokens: [version: version]
-    }
-}
-buildscript {
-    ext.kotlin_version = '1.3.61'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 
