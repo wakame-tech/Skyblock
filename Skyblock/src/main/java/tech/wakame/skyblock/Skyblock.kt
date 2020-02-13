@@ -1,12 +1,13 @@
 package tech.wakame.skyblock
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.plugin.java.JavaPlugin
 import java.lang.Exception
 
 class Skyblock : JavaPlugin() {
     override fun onEnable() { // Plugin startup logic
-        logger.info("Skyblock v0.0.1")
+        server.spigot().broadcast(TextComponent("Skyblock v0.0.1"))
         for ((name, executor) in Commands.commands) {
             getCommand(name)?.setExecutor(executor)
         }

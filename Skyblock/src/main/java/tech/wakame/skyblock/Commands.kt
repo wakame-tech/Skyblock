@@ -3,9 +3,13 @@ package tech.wakame.skyblock
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.bukkit.BukkitPlayer
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy
 import com.sk89q.worldedit.function.operation.Operations
+import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
 import net.md_5.bungee.api.ChatColor
@@ -32,6 +36,10 @@ class Island(val id: String, var name: String, var region: Region) {
         fun list(): MutableCollection<Island> {
             return islands.values
         }
+
+        fun exists(id: String): Boolean {
+            return id in islands.keys
+        }
     }
 }
 
@@ -44,7 +52,6 @@ object Commands {
     )
 
     fun Clipboard.paste(by: BukkitPlayer) {
-        val world = BukkitAdapter.adapt(by.world)
         // https://www.spigotmc.org/threads/1-13-load-paste-schematics-with-the-worldedit-api-simplified.357335/
         val es = wePlugin.worldEdit.editSessionFactory.getEditSession(by.world, -1)
         val op = ClipboardHolder(this)
@@ -55,9 +62,41 @@ object Commands {
 
         try {
             Operations.complete(op)
-            es.flushSession()
         } catch (e: Exception) {
             e.printStackTrace()
+        } finally {
+            es.flushSession()
+        }
+    }
+
+    fun copyRegion(id: String, by: BukkitPlayer): Region {
+        val selection = wePlugin.getSession(by.player).getSelection(by.world)
+        if (selection == null) {
+            by.player.sendMessage("please select 2 positions")
+            throw Exception("please select 2 positions")
+        }
+
+        val region = CuboidRegion(selection.minimumPoint, selection.maximumPoint)
+        logger.info("create copy ${region.width} x ${region.height} x ${region.length}")
+        val baClipboard = BlockArrayClipboard(region)
+        val es = wePlugin.worldEdit.editSessionFactory.getEditSession(by.world, -1)
+
+        try {
+            val forwardExtentCopy = ForwardExtentCopy(es, region, baClipboard, region.minimumPoint)
+            forwardExtentCopy.isCopyingEntities = true
+            Operations.complete(forwardExtentCopy)
+
+            val path = "${wePlugin.dataFolder}/schematics/${id}.schem"
+            val file = File(path)
+            logger.info("${baClipboard.region}")
+            BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(file.outputStream()).use {
+                it.write(baClipboard)
+            }
+            return region
+        } catch (e: Exception) {
+            throw e
+        } finally {
+            es.flushSession()
         }
     }
 
@@ -68,9 +107,10 @@ object Commands {
         if (!file.exists()) {
             return null
         }
-        val format = ClipboardFormats.findByFile(file)
-        val reader = format?.getReader(file.inputStream())
-        return reader?.read()
+
+        return BuiltInClipboardFormat.SPONGE_SCHEMATIC.getReader(file.inputStream()).use {
+            it.read()
+        }
     }
 
     /*
@@ -85,29 +125,42 @@ object Commands {
             return false
         }
 
-        // schematic save sample
-        /* 1. select first and second pos
-        *  2. //copy
-        *  3. //schem save [-f] <id>
-        */
-        // schematic load sample
         val player = wePlugin.wrapPlayer(sender)
         val id = args[1]
-        val clipboard = readSchematic(id) ?: run {
-            sender.sendMessage("${ChatColor.RED}schematic not found")
-            return false
-        }
-
-        Island.register(id, clipboard.region)
 
         try {
-            clipboard.paste(player)
-            sender.sendMessage("complete operation")
+            when (args[0]) {
+                "save" -> {
+                    // schematic save sample
+                    /* 1. select first and second pos
+                    *  2. //copy
+                    *  3. //schem save [-f] <id>
+                    */
+                    val region = copyRegion(id, player)
+                    Island.register(id, region)
+                    sender.sendMessage("complete operation")
+                }
+                "load" -> {
+                    if (!Island.exists(id)) {
+                        sender.sendMessage("island $id not found")
+                        return false
+                    }
+                    // schematic load sample
+                    val clipboard = readSchematic(id) ?: run {
+                        sender.sendMessage("${ChatColor.RED}schematic not found")
+                        return false
+                    }
+                    Island.register(id, clipboard.region)
+                    clipboard.paste(player)
+                    sender.sendMessage("complete operation")
+                }
+            }
+            return true
         } catch (e: Exception) {
             sender.sendMessage("${ChatColor.RED}internal error")
+            e.printStackTrace()
+            return false
         }
-
-        return true
     }
 
     private fun islands(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
