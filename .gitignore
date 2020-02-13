@@ -1,5 +1,6 @@
 # Minecraft Data
 data/
+!data/plugins/WorldEdit/schematics
 !data/void/advancements
 !data/void/datapacks
 !data/server.properties
@@ -8,6 +9,7 @@ data/
 .gradle
 .idea
 build/
+!build/libs
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
