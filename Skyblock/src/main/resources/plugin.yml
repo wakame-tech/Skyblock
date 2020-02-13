@@ -4,4 +4,6 @@ main: tech.wakame.skyblock.Skyblock
 api-version: 1.13
 commands:
   islands:
-    description: show islands
+    description: list islands
+  island:
+    description: register island <name>
