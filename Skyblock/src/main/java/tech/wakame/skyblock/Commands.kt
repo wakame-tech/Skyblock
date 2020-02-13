@@ -8,9 +8,9 @@ import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
-import com.sk89q.worldedit.util.formatting.text.TextComponent
-import com.sk89q.worldedit.util.formatting.text.event.ClickEvent
-import org.bukkit.ChatColor
+import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.ClickEvent
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -29,16 +29,8 @@ class Island(val id: String, var name: String, var region: Region) {
             print("+ id: $id region: $region")
         }
 
-        fun list(): String {
-            var text = "  id   location   "
-            islands.forEach { (id, island) ->
-                val c = island.region.center
-                val (x, y, z) = Triple(c.x.roundToInt(), c.y.roundToInt(), c.z.roundToInt())
-                val location = TextComponent.builder("($x $y $z)")
-                location.clickEvent(ClickEvent.runCommand("tp @p $x $y $z"))
-                text += "$id: $location\n"
-            }
-            return text
+        fun list(): MutableCollection<Island> {
+            return islands.values
         }
     }
 }
@@ -88,7 +80,7 @@ object Commands {
     * */
     private fun island(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
-        if (args.isEmpty() || args[1] !in listOf("save", "load") || args.size < 2) {
+        if (args.isEmpty() || args[0] !in listOf("save", "load") || args.size < 2) {
             sender.sendMessage("/islands [save/load] <id>")
             return false
         }
@@ -100,7 +92,7 @@ object Commands {
         */
         // schematic load sample
         val player = wePlugin.wrapPlayer(sender)
-        val id = args[0]
+        val id = args[1]
         val clipboard = readSchematic(id) ?: run {
             sender.sendMessage("${ChatColor.RED}schematic not found")
             return false
@@ -120,7 +112,25 @@ object Commands {
 
     private fun islands(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
-        sender.sendMessage(Island.list())
+        val message = Island.list().map {
+            val l = it.region.center
+            val (x, y, z) = Triple(l.x.roundToInt(), l.y.roundToInt(), l.z.roundToInt())
+            val id = TextComponent("%-10s".format(it.id)).apply {
+                isBold = true
+            }
+            val location = TextComponent("%-15s".format("($x, $y, $z)")).apply {
+                clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp @p $x $y $z")
+                color = ChatColor.YELLOW
+            }
+            val region = TextComponent("%-20s".format("${it.region}"))
+            TextComponent().apply {
+                addExtra(id)
+                addExtra(location)
+                addExtra(region)
+                addExtra("\n")
+            }
+        }.toTypedArray()
+        sender.spigot().sendMessage(*message)
         return true
     }
 }
