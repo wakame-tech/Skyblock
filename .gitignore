@@ -17,6 +17,7 @@
 # Gradle Project
 .gradle
 .idea
+Skyblock/libs/*.jar
 build/
 !build/libs
 gradle-app.setting
@@ -25,3 +26,4 @@ gradle-app.setting
 
 # Other
 scripts/env.sh
+crazy_advancements

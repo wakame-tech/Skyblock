@@ -31,6 +31,9 @@ repositories {
     maven {
         url 'http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn/'
     }
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public'
+    }
 }
 
 group = pluginGroup
@@ -42,6 +45,8 @@ configurations {
 }
 
 dependencies {
+    compile files('libs/CrazyAdvancementsAPI.jar')
+    compile 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
     compile 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
     compile 'com.sk89q.worldedit:worldedit-bukkit:7.1.0'
     // embed 'com.sk89q.worldedit:worldedit-bukkit:7.1.1-SNAPSHOT'

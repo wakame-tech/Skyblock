@@ -61,3 +61,6 @@ islands
 ### Links
 Advancement Generator
 <https://advancements.thedestruc7i0n.ca/>
+
+CrazyAdvancementsAPI
+<https://github.com/ZockerAxel/CrazyAdvancementsAPI>
