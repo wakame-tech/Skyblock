@@ -1,0 +1,28 @@
+{
+    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
+    "display": {
+        "title": {
+            "text": "スキル3",
+            "color": "white"
+        },
+        "description": {
+            "text": "Description"
+        },
+        "icon": {
+            "item": "minecraft:stone"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false
+    },
+    "criteria": {
+        "bbb": {
+            "trigger": "minecraft:placed_block",
+            "conditions": {
+                "block": "minecraft:sand"
+            }
+        }
+    },
+    "parent": "skill:root"
+}

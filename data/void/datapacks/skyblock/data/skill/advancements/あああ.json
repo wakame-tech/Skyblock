@@ -1,0 +1,29 @@
+{
+    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
+    "display": {
+        "title": {
+            "text": "スキル2",
+            "color": "yellow",
+            "bold": false
+        },
+        "description": {
+            "text": "Description"
+        },
+        "icon": {
+            "item": "minecraft:stone"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false
+    },
+    "criteria": {
+        "条件": {
+            "trigger": "minecraft:placed_block",
+            "conditions": {
+                "block": "minecraft:dirt"
+            }
+        }
+    },
+    "parent": "skill:root"
+}

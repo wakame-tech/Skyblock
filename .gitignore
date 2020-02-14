@@ -12,7 +12,6 @@
 
 !/data/void
 /data/void/*
-!/data/void/advancements
 !/data/void/datapacks
 
 # Gradle Project
@@ -23,3 +22,6 @@ build/
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
+
+# Other
+scripts/env.sh

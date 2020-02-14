@@ -24,7 +24,7 @@ islands
     id: main_island
     location:
       x: 8
-      y: 4
+      y: 22
       z: 9
   - name: 鼠島
     id: pika_island
@@ -57,3 +57,7 @@ islands
       y: 14
       z: -3
 ```
+
+### Links
+Advancement Generator
+<https://advancements.thedestruc7i0n.ca/>

@@ -1,20 +1,18 @@
 package tech.wakame.skyblock
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.bukkit.BukkitPlayer
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy
 import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.regions.CuboidRegion
-import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
+import org.bukkit.Location
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -24,25 +22,6 @@ import java.lang.Exception
 import java.util.logging.Logger
 import kotlin.math.roundToInt
 
-class Island(val id: String, var name: String, var region: Region) {
-    companion object {
-        private val islands: MutableMap<String, Island> = mutableMapOf()
-
-        fun register(id: String, region: Region) {
-            islands[id] = Island(id, id, region)
-            print("+ id: $id region: $region")
-        }
-
-        fun list(): MutableCollection<Island> {
-            return islands.values
-        }
-
-        fun exists(id: String): Boolean {
-            return id in islands.keys
-        }
-    }
-}
-
 object Commands {
     lateinit var wePlugin: WorldEditPlugin
     lateinit var logger: Logger
@@ -51,7 +30,7 @@ object Commands {
             "islands" to CommandExecutor(::islands)
     )
 
-    fun Clipboard.paste(by: BukkitPlayer) {
+    private fun Clipboard.paste(by: BukkitPlayer) {
         // https://www.spigotmc.org/threads/1-13-load-paste-schematics-with-the-worldedit-api-simplified.357335/
         val es = wePlugin.worldEdit.editSessionFactory.getEditSession(by.world, -1)
         val op = ClipboardHolder(this)
@@ -69,7 +48,7 @@ object Commands {
         }
     }
 
-    fun copyRegion(id: String, by: BukkitPlayer): Region {
+    private fun copyRegion(id: String, by: BukkitPlayer) {
         val selection = wePlugin.getSession(by.player).getSelection(by.world)
         if (selection == null) {
             by.player.sendMessage("please select 2 positions")
@@ -92,7 +71,6 @@ object Commands {
             BuiltInClipboardFormat.SPONGE_SCHEMATIC.getWriter(file.outputStream()).use {
                 it.write(baClipboard)
             }
-            return region
         } catch (e: Exception) {
             throw e
         } finally {
@@ -137,11 +115,13 @@ object Commands {
                     *  3. //schem save [-f] <id>
                     */
                     val region = copyRegion(id, player)
-                    Island.register(id, region)
+                    val location = sender.location
+                    Config.addIsland(Island(id, id, location))
+                    sender.sendMessage("new island $id registered!")
                     sender.sendMessage("complete operation")
                 }
                 "load" -> {
-                    if (!Island.exists(id)) {
+                    if (!Config.islands.containsKey(id)) {
                         sender.sendMessage("island $id not found")
                         return false
                     }
@@ -150,7 +130,6 @@ object Commands {
                         sender.sendMessage("${ChatColor.RED}schematic not found")
                         return false
                     }
-                    Island.register(id, clipboard.region)
                     clipboard.paste(player)
                     sender.sendMessage("complete operation")
                 }
@@ -165,21 +144,18 @@ object Commands {
 
     private fun islands(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
-        val message = Island.list().map {
-            val l = it.region.center
-            val (x, y, z) = Triple(l.x.roundToInt(), l.y.roundToInt(), l.z.roundToInt())
-            val id = TextComponent("%-10s".format(it.id)).apply {
-                isBold = true
-            }
-            val location = TextComponent("%-15s".format("($x, $y, $z)")).apply {
-                clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp @p $x $y $z")
-                color = ChatColor.YELLOW
-            }
-            val region = TextComponent("%-20s".format("${it.region}"))
+        fun Location.round() = Triple(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
+
+        val message = Config.islands.map { (id, island) ->
+            val (x, y, z) = island.location.round()
             TextComponent().apply {
-                addExtra(id)
-                addExtra(location)
-                addExtra(region)
+                addExtra(TextComponent("%-10s".format("${island.name}($id)")).apply {
+                    isBold = true
+                })
+                addExtra(TextComponent("%-15s".format("($x, $y, $z)")).apply {
+                    clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp @p $x $y $z")
+                    color = ChatColor.YELLOW
+                })
                 addExtra("\n")
             }
         }.toTypedArray()
