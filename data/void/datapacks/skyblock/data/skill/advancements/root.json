@@ -1,9 +1,9 @@
 {
-  "name": "custom:root",
+  "name": "skill:root",
   "display": {
     "icon": "STONE",
     "title": {
-      "json": "{\"text\":\"root\"}"
+      "json": "{\"text\":\"skill1\"}"
     },
     "description": {
       "json": "{\"text\":\"desc\"}"
@@ -18,12 +18,9 @@
     "visibility": "ALWAYS"
   },
   "criteriaAmount": 1,
-  "criteria": [
-    "criteria1"
-  ],
   "criteriaRequirements": [
     [
-      "criteria1"
+      "a"
     ]
   ]
 }
