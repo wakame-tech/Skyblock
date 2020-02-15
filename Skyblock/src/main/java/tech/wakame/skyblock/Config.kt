@@ -1,35 +1,13 @@
 package tech.wakame.skyblock
 
-import org.bukkit.Location
 import org.bukkit.configuration.Configuration
-import org.bukkit.configuration.ConfigurationSection
-import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.configuration.file.YamlConfiguration
-import java.io.File
+import tech.wakame.skyblock.api.Island
 
-data class Island(val name: String, val id: String, val location: Location) {
-    companion object {
-        fun fromConfig(section: ConfigurationSection, base: String): Island? {
-            val name = section.getString("$base.name")
-            val id = section.getString("$base.id")
-            val location = section.getLocation("$base.location")
-            if (name == null || id == null || location == null) {
-                return null
-            }
-            return Island(name, id, location)
-        }
-    }
-
-    override fun toString(): String {
-        return "$name($id): $location"
-    }
-}
 
 object Config {
-    lateinit var config: Configuration
     val islands: MutableMap<String, Island> = mutableMapOf()
 
-    fun save() {
+    fun save(config: Configuration) {
         config.set("version", "0.0.1")
         islands.forEach { (id, island) ->
             val path = "islands.$id"
@@ -40,9 +18,7 @@ object Config {
         }
     }
 
-    fun load(configFile: File) {
-        config = YamlConfiguration.loadConfiguration(configFile)
-
+    fun load(config: Configuration) {
         if (!config.contains("islands")) {
             config.createSection("islands")
         }
@@ -51,10 +27,8 @@ object Config {
 
         for (id in ids) {
             val path = "islands.$id"
-            val section = config.getConfigurationSection(path) ?: continue
-            val island = Island.fromConfig(section, path) ?: continue
+            val island = Island.fromConfig(config, path) ?: continue
             islands[id] = island
-            print("$path read $island")
         }
     }
 

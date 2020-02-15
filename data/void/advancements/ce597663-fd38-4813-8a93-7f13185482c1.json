@@ -167,12 +167,6 @@
     },
     "done": true
   },
-  "skill:test": {
-    "criteria": {
-      "Criteria": "2020-02-14 22:44:37 +0900"
-    },
-    "done": true
-  },
   "minecraft:recipes/building_blocks/chiseled_stone_bricks_stone_from_stonecutting": {
     "criteria": {
       "has_stone": "2020-02-13 11:34:02 +0900"

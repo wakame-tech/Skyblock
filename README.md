@@ -64,3 +64,6 @@ Advancement Generator
 
 CrazyAdvancementsAPI
 <https://github.com/ZockerAxel/CrazyAdvancementsAPI>
+
+MC-Remapper
+<https://github.com/HeartPattern/MC-Remapper>

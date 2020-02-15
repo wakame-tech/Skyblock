@@ -5,8 +5,8 @@ import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.File
 import java.lang.Exception
+import java.util.logging.Logger
 
 class Skyblock : JavaPlugin() {
     private fun welcomeMessage(): Array<TextComponent> {
@@ -31,14 +31,7 @@ class Skyblock : JavaPlugin() {
     }
 
     override fun onEnable() { // Plugin startup logic
-        val configFile = File(dataFolder, "config.yml")
-        if (!configFile.exists()) {
-            configFile.parentFile.mkdirs()
-        }
-        Config.load(configFile)
-        saveConfig()
-        config.setDefaults(Config.config)
-        logger.info("config path: ${config.currentPath}")
+        Config.load(config)
 
         server.spigot().broadcast(*welcomeMessage())
 
@@ -52,13 +45,18 @@ class Skyblock : JavaPlugin() {
             logger.warning("need dependency WorldEdit")
             throw Exception("need dependency WorldEdit")
         }
-        Commands.wePlugin = plugin
-        Commands.logger = logger
+
+        Skyblock.logger = logger
+        Skyblock.wePlugin = wePlugin
     }
 
     override fun onDisable() { // Plugin shutdown logic
-        Config.save()
-        logger.info("config path: ${config.currentPath}")
+        Config.save(config)
         saveConfig()
+    }
+
+    companion object {
+        lateinit var logger: Logger
+        lateinit var wePlugin: WorldEditPlugin
     }
 }
