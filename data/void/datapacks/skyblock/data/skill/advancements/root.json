@@ -1,28 +1,29 @@
 {
-    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
-    "display": {
-        "title": {
-            "text": "スキル",
-            "color": "white"
-        },
-        "description": {
-            "text": "Description"
-        },
-        "icon": {
-            "item": "minecraft:stone"
-        },
-        "frame": "task",
-        "show_toast": true,
-        "announce_to_chat": true,
-        "hidden": false,
-        "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  "name": "custom:root",
+  "display": {
+    "icon": "STONE",
+    "title": {
+      "json": "{\"text\":\"root\"}"
     },
-    "criteria": {
-        "Criteria": {
-            "trigger": "minecraft:placed_block",
-            "conditions": {
-                "block": "minecraft:stone"
-            }
-        }
-    }
+    "description": {
+      "json": "{\"text\":\"desc\"}"
+    },
+    "frame": "TASK",
+    "showToast": false,
+    "announceChat": false,
+    "x": 0.0,
+    "y": 0.0,
+    "tabWidth": 0.0,
+    "tabHeight": 0.0,
+    "visibility": "ALWAYS"
+  },
+  "criteriaAmount": 1,
+  "criteria": [
+    "criteria1"
+  ],
+  "criteriaRequirements": [
+    [
+      "criteria1"
+    ]
+  ]
 }
