@@ -19,7 +19,7 @@ annotation class AdvancementMarker
 
 @AdvancementMarker
 class AdvancementsDSL(private val namespace: String, init: AdvancementRoot.() -> AdvancementTree) {
-    private var rootTree: AdvancementTree = init(AdvancementRoot(namespace))
+    var rootTree: AdvancementTree = init(AdvancementRoot(namespace))
 
     fun dumpJson(datapackRootPath: String) {
         // dry run
@@ -34,13 +34,14 @@ class AdvancementsDSL(private val namespace: String, init: AdvancementRoot.() ->
                 it.print(json)
             }
 
-            Skyblock.logger.info("${adv.self.name} dumped ${file.canonicalPath}")
+            // Skyblock.logger.info("${adv.self.name} dumped ${file.canonicalPath}")
         }
 
         // message
-        Skyblock.server.spigot().broadcast(TextComponent("namespace: $namespace"))
+//        Skyblock.server.spigot().broadcast(TextComponent("namespace: $namespace"))
         rootTree.traverse { adv, d ->
-            Skyblock.server.spigot().broadcast(TextComponent("  ".repeat(d) + adv.toString()))
+            // Skyblock.server.spigot().broadcast(TextComponent("  ".repeat(d) + adv.toString()))
+            println("  ".repeat(d) + adv.toString())
         }
     }
 }
@@ -50,6 +51,10 @@ class AdvancementRoot(private val namespace: String) {
     fun advancement(init: AdvancementContext.() -> Unit): AdvancementTree {
         return AdvancementContext(null, namespace, "root").apply(init).build()
     }
+}
+
+fun advancement(key: String, init: AdvancementContext.() -> Unit): ChildContext {
+    return key to init
 }
 
 @AdvancementMarker
@@ -81,9 +86,11 @@ data class AdvancementTree(val self: Advancement, val children: List<Advancement
     }
 }
 
+typealias ChildContext = Pair<String, AdvancementContext.() -> Unit>
+
 @AdvancementMarker
 class AdvancementContext(private val parent: Advancement?, private val namespace: String, private val key: String) {
-    private val childrenContexts: MutableList<Pair<String, AdvancementContext.() -> Unit>> = mutableListOf()
+    private val childContexts: MutableList<ChildContext> = mutableListOf()
     var display: AdvancementDisplay = DEFAULT_DISPLAY
     private var requirements: Array<Array<String>> = arrayOf(arrayOf())
     // var rewards: AdvancementRewards = ???
@@ -102,7 +109,11 @@ class AdvancementContext(private val parent: Advancement?, private val namespace
     }
 
     fun advancement(key: String, init: AdvancementContext.() -> Unit) {
-        childrenContexts += key to init
+        childContexts += key to init
+    }
+
+    fun merge(context: ChildContext) {
+        childContexts += context
     }
 
     fun rewards(init: AdvancementsRewardContext.() -> Unit): Nothing = TODO()
@@ -113,8 +124,8 @@ class AdvancementContext(private val parent: Advancement?, private val namespace
         self.saveCriteriaRequirements(requirements)
 
         // lazy initialize
-        val children = childrenContexts.map { (key, init) ->
-            AdvancementContext(self, namespace, key).apply(init).build()
+        val children = childContexts.map { (key, init) ->
+            AdvancementContext(self, namespace, if (key == "") this.key else key).apply(init).build()
         }
 
         return AdvancementTree(self, children)

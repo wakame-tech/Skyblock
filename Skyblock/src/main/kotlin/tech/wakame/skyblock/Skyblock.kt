@@ -53,7 +53,7 @@ class Skyblock : JavaPlugin() {
         Skyblock.server = server
 
         // test
-        SkillAdvancements(dataFolder.resolve("../../void/datapacks/skyblock").absolutePath)
+        // SkillAdvancements(dataFolder.resolve("../../void/datapacks/skyblock").absolutePath)
     }
 
     override fun onDisable() { // Plugin shutdown logic

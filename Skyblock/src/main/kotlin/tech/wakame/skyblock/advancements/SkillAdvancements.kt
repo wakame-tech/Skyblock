@@ -14,6 +14,7 @@ import net.minecraft.server.v1_15_R1.MinecraftKey
 import org.bukkit.Material
 import tech.wakame.skyblock.Skyblock
 import tech.wakame.skyblock.advancements.dsl.AdvancementsDSL
+import tech.wakame.skyblock.advancements.dsl.advancement
 import java.io.File
 
 class SkillAdvancements(private val datapackRootPath: String) {
@@ -45,6 +46,14 @@ class SkillAdvancements(private val datapackRootPath: String) {
     }
 
     init {
+        val sub = advancement("a") {
+            display("skill1-1") {}
+
+            advancement("grandchild1") {
+                display("skill1-1-1") {}
+            }
+        }
+
         val dsl = AdvancementsDSL("skill") {
             advancement {
                 display("skill1") {
@@ -60,13 +69,7 @@ class SkillAdvancements(private val datapackRootPath: String) {
                     arrayOf(arrayOf("a"))
                 }
 
-                advancement("child1") {
-                    display("skill1-1") {}
-
-                    advancement("grandchild1") {
-                        display("skill1-1-1") {}
-                    }
-                }
+                merge(sub)
 
                 advancement("child2") {
                     display("skill11-2") {}

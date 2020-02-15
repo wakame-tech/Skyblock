@@ -52,8 +52,7 @@ configurations {
 }
 
 dependencies {
-    implementation "org.apache.commons:commons-lang3"
-
+    testCompile 'org.jetbrains.kotlin:kotlin-test-junit'
     implementation 'com.google.code.gson:gson:2.8.6'
     compile files('libs/spigot-1.15.1.jar')
     compile files('libs/CrazyAdvancementsAPI.jar')
