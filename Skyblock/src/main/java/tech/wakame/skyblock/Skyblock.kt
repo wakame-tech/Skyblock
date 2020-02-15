@@ -47,7 +47,7 @@ class Skyblock : JavaPlugin() {
         }
 
         Skyblock.logger = logger
-        Skyblock.wePlugin = wePlugin
+        Skyblock.wePlugin = plugin
     }
 
     override fun onDisable() { // Plugin shutdown logic

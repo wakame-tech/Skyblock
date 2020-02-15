@@ -12,7 +12,7 @@ import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
 import tech.wakame.skyblock.Skyblock
 import java.io.File
-import java.lang.Exception
+import kotlin.Exception
 
 fun BukkitPlayer.paste(clipboard: Clipboard) {
     // https://www.spigotmc.org/threads/1-13-load-paste-schematics-with-the-worldedit-api-simplified.357335/
@@ -46,7 +46,6 @@ fun BukkitPlayer.editSession(): EditSession {
 // == //schem save <id>
 fun saveSchematic(clipboard: BlockArrayClipboard, editSession: EditSession, id: String) {
     try {
-        clipboard.region
         val forwardExtentCopy = ForwardExtentCopy(editSession, clipboard.region, clipboard, clipboard.region.minimumPoint)
         forwardExtentCopy.isCopyingEntities = true
         Operations.complete(forwardExtentCopy)

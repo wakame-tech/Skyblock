@@ -26,7 +26,7 @@ object Commands {
     *   /island load <id>
     * */
     private fun island(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        sender.sendMessage("$args")
+        sender.sendMessage("args: ${args.joinToString(",")}")
         if (sender !is Player) return false
         if (args.isEmpty() || args[0] !in listOf("save", "load") || args.size < 2) {
             sender.sendMessage("/islands [save/load] <id>")
