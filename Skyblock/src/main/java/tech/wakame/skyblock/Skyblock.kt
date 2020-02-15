@@ -4,14 +4,16 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
+import org.bukkit.Server
 import org.bukkit.plugin.java.JavaPlugin
+import tech.wakame.skyblock.advancements.SkillAdvancements
 import java.lang.Exception
 import java.util.logging.Logger
 
 class Skyblock : JavaPlugin() {
     private fun welcomeMessage(): Array<TextComponent> {
         return arrayOf(
-                TextComponent("Skyblock v0.0.1").apply {
+                TextComponent("Skyblock v$VERSION").apply {
                     color = ChatColor.YELLOW
                     isBold = true
                 },
@@ -48,6 +50,10 @@ class Skyblock : JavaPlugin() {
 
         Skyblock.logger = logger
         Skyblock.wePlugin = plugin
+        Skyblock.server = server
+
+        // test
+        SkillAdvancements(dataFolder.resolve("../../void/datapacks/skyblock").absolutePath)
     }
 
     override fun onDisable() { // Plugin shutdown logic
@@ -56,7 +62,10 @@ class Skyblock : JavaPlugin() {
     }
 
     companion object {
+        const val VERSION = "0.0.2"
+
         lateinit var logger: Logger
         lateinit var wePlugin: WorldEditPlugin
+        lateinit var server: Server
     }
 }
