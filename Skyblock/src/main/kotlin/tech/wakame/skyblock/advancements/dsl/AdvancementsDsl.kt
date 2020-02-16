@@ -1,46 +1,57 @@
 package tech.wakame.skyblock.advancements.dsl
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
-import eu.endercentral.crazy_advancements.Advancement
-import eu.endercentral.crazy_advancements.AdvancementDisplay
-import eu.endercentral.crazy_advancements.AdvancementVisibility
-import eu.endercentral.crazy_advancements.NameKey
-import net.md_5.bungee.api.chat.TextComponent
-import net.minecraft.server.v1_15_R1.Criterion
-import net.minecraft.server.v1_15_R1.CriterionInstance
-import net.minecraft.server.v1_15_R1.MinecraftKey
-import org.bukkit.Material
-import tech.wakame.skyblock.Skyblock
+import com.google.gson.*
+import tech.wakame.skyblock.advancements.dsl.elements.Advancement
+import tech.wakame.skyblock.advancements.dsl.elements.Criterion
+import tech.wakame.skyblock.advancements.dsl.elements.Display
 import java.io.File
+
+data class Key(val namespace: String, val key: String) {
+    override fun toString() = "$namespace:$key"
+}
 
 @DslMarker
 annotation class AdvancementMarker
 
 @AdvancementMarker
-class AdvancementsDSL(private val namespace: String, init: AdvancementRoot.() -> AdvancementTree) {
-    var rootTree: AdvancementTree = init(AdvancementRoot(namespace))
+class AdvancementsDSL(private val domain: String, init: AdvancementRoot.() -> AdvancementTree) {
+    var rootTree: AdvancementTree = init(AdvancementRoot(domain))
 
     fun dumpJson(datapackRootPath: String) {
-        // dry run
+        val gsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(Advancement::class.java, JsonSerializer<Advancement> { src, _, context ->
+            JsonObject().apply {
+                addProperty("name", src.name.toString())
+                if (src.display != null) {
+                    add("display", context.serialize(src.display))
+                }
+                if (src.requirements != null) {
+                    add("requirements", context.serialize(src.requirements))
+                }
+                if (src.rewards != null) {
+                    add("rewards", context.serialize(src.rewards))
+                }
+                add("criteria", context.serialize(src.criteria))
+                if (src.parent != null) {
+                    addProperty("parent", src.parent.name.toString())
+                }
+            }
+        })
+        gsonBuilder.setPrettyPrinting()
+        gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        val gson = gsonBuilder.create()
+
         rootTree.traverse { adv, _ ->
-            val json = adv.self.advancementJSON.let {
-                GsonBuilder().setPrettyPrinting().create().toJson(JsonParser().parse(it))
-            }
-            val key = adv.self.name.key
-            val file = File(datapackRootPath).resolve("./data/$namespace/advancements/$key.json")
-
-            file.printWriter().use {
-                it.print(json)
-            }
-
-            // Skyblock.logger.info("${adv.self.name} dumped ${file.canonicalPath}")
+            val json = gson.toJson(adv)
+            val folder = File(datapackRootPath).resolve("./data/$domain/advancements/${adv.name.namespace}")
+            if (!folder.exists())
+                folder.mkdirs()
+            val file = folder.resolve("./${adv.name.key}.json")
+            file.writeText(json)
+            println("[DUMP] ${adv.name} at ${file.canonicalPath}")
         }
 
-        // message
-//        Skyblock.server.spigot().broadcast(TextComponent("namespace: $namespace"))
         rootTree.traverse { adv, d ->
-            // Skyblock.server.spigot().broadcast(TextComponent("  ".repeat(d) + adv.toString()))
             println("  ".repeat(d) + adv.toString())
         }
     }
@@ -57,22 +68,11 @@ fun advancement(key: String, init: AdvancementContext.() -> Unit): ChildContext 
     return key to init
 }
 
-@AdvancementMarker
-data class AdvancementDisplayBuilder(
-        var icon: Material = Material.STONE,
-        var title: String = "",
-        var description: String = "",
-        var frame: AdvancementDisplay.AdvancementFrame = AdvancementDisplay.AdvancementFrame.TASK,
-        var showToast: Boolean = false,
-        var announceChat: Boolean = false,
-        var visibility: AdvancementVisibility = AdvancementVisibility.ALWAYS
-) {
-    fun build() = AdvancementDisplay(icon, title, description, frame, showToast, announceChat, visibility)
-}
+
 
 data class AdvancementTree(val self: Advancement, val children: List<AdvancementTree>) {
-    fun traverse(depth: Int = 0, action: (AdvancementTree, Int) -> Unit) {
-        action(this, depth)
+    fun traverse(depth: Int = 0, action: (Advancement, Int) -> Unit) {
+        action(self, depth)
         if (this.children.isEmpty()) {
             return
         }
@@ -80,24 +80,19 @@ data class AdvancementTree(val self: Advancement, val children: List<Advancement
             it.traverse(depth + 1, action)
         }
     }
-
-    override fun toString(): String {
-        return "${self.name.key} parent: ${self.parent?.name?.key ?: "---"}"
-    }
 }
 
 typealias ChildContext = Pair<String, AdvancementContext.() -> Unit>
 
 @AdvancementMarker
 class AdvancementContext(private val parent: Advancement?, private val namespace: String, private val key: String) {
-    private val childContexts: MutableList<ChildContext> = mutableListOf()
-    var display: AdvancementDisplay = DEFAULT_DISPLAY
-    private var requirements: Array<Array<String>> = arrayOf(arrayOf())
-    // var rewards: AdvancementRewards = ???
+    private val children: MutableList<ChildContext> = mutableListOf()
+    var display: Display? = Display()
+    private var requirements: Array<Array<String>>? = null
     private var criteria: Map<String, Criterion> = mapOf()
 
-    fun display(title: String, init: AdvancementDisplayBuilder.() -> Unit) {
-        display = AdvancementDisplayBuilder(title = title).also(init).build()
+    fun display(title: String, init: Display.() -> Unit = {}) {
+        display = Display(title = title).apply(init)
     }
 
     fun criteria(init: AdvancementCriteriaContext.() -> Unit) {
@@ -109,30 +104,30 @@ class AdvancementContext(private val parent: Advancement?, private val namespace
     }
 
     fun advancement(key: String, init: AdvancementContext.() -> Unit) {
-        childContexts += key to init
+        children += key to init
     }
 
     fun merge(context: ChildContext) {
-        childContexts += context
+        children += context
     }
 
     fun rewards(init: AdvancementsRewardContext.() -> Unit): Nothing = TODO()
 
     fun build(): AdvancementTree {
-        val nameKey = NameKey(namespace, key)
-        val self = Advancement(parent, nameKey, display)
-        self.saveCriteriaRequirements(requirements)
+        val name = Key(namespace, key)
+
+        if (criteria.isEmpty()) {
+            throw Exception("Advancement $name Criteria cannot be empty")
+        }
+
+        val self = Advancement(parent, name, display, requirements, criteria)
 
         // lazy initialize
-        val children = childContexts.map { (key, init) ->
+        val children = children.map { (key, init) ->
             AdvancementContext(self, namespace, if (key == "") this.key else key).apply(init).build()
         }
 
         return AdvancementTree(self, children)
-    }
-
-    companion object {
-        val DEFAULT_DISPLAY = AdvancementDisplay(Material.STONE, "root", "desc", AdvancementDisplay.AdvancementFrame.TASK, false, false, AdvancementVisibility.ALWAYS)
     }
 }
 
@@ -140,24 +135,21 @@ class AdvancementContext(private val parent: Advancement?, private val namespace
 class AdvancementRequirementsContext {
     private val requirements: Array<Array<String>> = arrayOf()
 
-    fun build(): Array<Array<String>> = requirements
+    // TODO
+    infix fun String.or(other: String) = arrayOf(arrayOf(this, other))
+
+    fun build() = requirements
 }
 
 @AdvancementMarker
 class AdvancementCriteriaContext {
     private val criteria: MutableMap<String, Criterion> = mutableMapOf()
 
-    infix operator fun String.minus(criterion: Criterion) {
-        criteria += this to criterion
+    fun criterion(name: String, init: () -> Criterion) {
+        criteria += name to init()
     }
 
-    // helper
-    val impossible = Criterion(CriterionInstance {
-        MinecraftKey("minecraft", "impossible")
-    })
-
-
-    fun build(): Map<String, Criterion> = criteria.toMap()
+    fun build() = criteria.toMap()
 }
 
 @AdvancementMarker

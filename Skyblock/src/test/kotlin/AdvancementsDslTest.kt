@@ -3,29 +3,60 @@ import org.bukkit.Material
 import org.junit.Test
 import tech.wakame.skyblock.advancements.dsl.AdvancementsDSL
 import tech.wakame.skyblock.advancements.dsl.advancement
+import tech.wakame.skyblock.advancements.dsl.elements.Criterion
 import java.io.File
 import kotlin.test.assertEquals
 
 class AdvancementsDslTest {
-    @Test
+     @Test
     fun test() {
         val child2 = advancement("child2") {
-            display("skill1-1") {}
+            display ("1")
+
+            criteria {
+                criterion("a") {
+                    Criterion.impossible
+                }
+            }
 
             advancement("grandchild1") {
-                display("skill1-1-1") {}
+                display("a")
+
+                criteria {
+                    criterion("a") {
+                        Criterion.impossible
+                    }
+                }
             }
 
             advancement("grandchild2") {
-                display("skill1-1-1") {}
+                display("skill1-1-1")
+
+                criteria {
+                    criterion("a") {
+                        Criterion.impossible
+                    }
+                }
             }
         }
 
         val child3 = advancement("child3") {
-            display("skill1-1") {}
+            display("skill1-1")
+
+            criteria {
+                criterion("a") {
+                    Criterion.impossible
+                }
+            }
 
             advancement("grandchild1") {
-                display("skill1-1-1") {}
+                display("skill1-1-1")
+
+                criteria {
+                    criterion("a") {
+                        Criterion.impossible
+                    }
+                }
             }
         }
 
@@ -33,11 +64,10 @@ class AdvancementsDslTest {
             advancement {
                 display("skill1") {
                     description = "desc"
-                    icon = Material.STONE
                 }
 
                 criteria {
-                    "a" - impossible
+                    // criterion("a") { Criterion.impossible }
                 }
 
                 requirements {
@@ -45,7 +75,13 @@ class AdvancementsDslTest {
                 }
 
                 advancement("child1") {
-                    display("skill11-2") {}
+                    display("skill11-2")
+
+                    criteria {
+                        criterion("a") {
+                            Criterion.placedBlock("minecraft:stone")
+                        }
+                    }
                 }
 
                 merge(child2)
