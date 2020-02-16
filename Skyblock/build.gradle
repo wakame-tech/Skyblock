@@ -12,15 +12,8 @@ plugins {
     id 'java'
     id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '1.3.10'
-    id 'com.github.johnrengelman.shadow' version '2.0.4'
-    id "io.spring.dependency-management" version "1.0.8.RELEASE"
 }
 
-dependencyManagement {
-    dependencies {
-        dependency "org.apache.commons:commons-lang3:3.9"
-    }
-}
 
 repositories {
     mavenCentral()
@@ -35,12 +28,6 @@ repositories {
     maven {
         url 'https://maven.sk89q.com/repo/'
     }
-    maven {
-        url 'http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn/'
-    }
-    maven {
-        url 'https://papermc.io/repo/repository/maven-public'
-    }
 }
 
 group = pluginGroup
@@ -54,13 +41,9 @@ configurations {
 dependencies {
     testCompile 'org.jetbrains.kotlin:kotlin-test-junit'
     implementation 'com.google.code.gson:gson:2.8.6'
-    compile files('libs/spigot-1.15.1.jar')
-    compile files('libs/CrazyAdvancementsAPI.jar')
     compile 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
     compile 'com.sk89q.worldedit:worldedit-bukkit:7.1.0'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     embed "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    // compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 sourceCompatibility = '1.8'
@@ -75,18 +58,6 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-}
-
-shadowJar {
-    manifest {
-        attributes 'Main-Class': 'tech.wakame.skyblock.Skyblock'
-    }
-
-    doLast {
-        exec {
-            commandLine 'cp', 'build/libs/*', '~/Documents/spigot/data/plugins'
-        }
     }
 }
 

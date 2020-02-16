@@ -1,77 +1,23 @@
 
-import org.bukkit.Material
 import org.junit.Test
 import tech.wakame.skyblock.advancements.dsl.AdvancementsDSL
-import tech.wakame.skyblock.advancements.dsl.advancement
 import tech.wakame.skyblock.advancements.dsl.elements.Criterion
-import java.io.File
-import kotlin.test.assertEquals
 
 class AdvancementsDslTest {
      @Test
     fun test() {
-        val child2 = advancement("child2") {
-            display ("1")
-
-            criteria {
-                criterion("a") {
-                    Criterion.impossible
-                }
-            }
-
-            advancement("grandchild1") {
-                display("a")
-
-                criteria {
-                    criterion("a") {
-                        Criterion.impossible
-                    }
-                }
-            }
-
-            advancement("grandchild2") {
-                display("skill1-1-1")
-
-                criteria {
-                    criterion("a") {
-                        Criterion.impossible
-                    }
-                }
-            }
-        }
-
-        val child3 = advancement("child3") {
-            display("skill1-1")
-
-            criteria {
-                criterion("a") {
-                    Criterion.impossible
-                }
-            }
-
-            advancement("grandchild1") {
-                display("skill1-1-1")
-
-                criteria {
-                    criterion("a") {
-                        Criterion.impossible
-                    }
-                }
-            }
-        }
-
-        val dsl = AdvancementsDSL("skill") {
-            advancement {
+        val dsl = AdvancementsDSL("skyblock","skill", "skill1") {
+            root {
                 display("skill1") {
                     description = "desc"
                 }
 
                 criteria {
-                    // criterion("a") { Criterion.impossible }
+                    criterion("a") { Criterion.impossible }
                 }
 
-                requirements {
-                    arrayOf(arrayOf("a"))
+                rewards {
+                    experience = 100
                 }
 
                 advancement("child1") {
@@ -83,19 +29,9 @@ class AdvancementsDslTest {
                         }
                     }
                 }
-
-                merge(child2)
-
-                merge(child3)
             }
         }
 
-        val datapackRootPath = File(".").resolve("./../data/void/datapacks/Skyblock").canonicalPath
-
-        println(datapackRootPath)
-
-        dsl.dumpJson(datapackRootPath)
-
-        assertEquals(3, dsl.rootTree.children.size)
+        dsl.dumpJson("./../data/void/datapacks")
     }
 }

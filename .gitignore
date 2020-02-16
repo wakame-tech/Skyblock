@@ -10,15 +10,12 @@
 /data/plugins/WorldEdit/*
 !/data/plugins/WorldEdit/schematics
 
-!/data/void
-/data/void/*
-!/data/void/datapacks
-
 # Gradle Project
 .gradle
 .idea
 Skyblock/libs/*.jar
 build/
+logs/
 !build/libs
 gradle-app.setting
 !gradle-wrapper.jar
@@ -26,6 +23,3 @@ gradle-app.setting
 
 # Other
 scripts/env.sh
-crazy_advancements
-MC-Remapper-master
-tmp

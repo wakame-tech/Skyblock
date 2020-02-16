@@ -7,15 +7,15 @@ import tech.wakame.skyblock.advancements.dsl.elements.Criterion
 class SkillAdvancements(private val datapackRootPath: String) {
     init {
         val sub = advancement("a") {
-            display("skill1-1") {}
+            display("skill1-1")
 
             advancement("grandchild1") {
-                display("skill1-1-1") {}
+                display("skill1-1-1")
             }
         }
 
-        val dsl = AdvancementsDSL("skill") {
-            advancement {
+        val dsl = AdvancementsDSL("skyblock", "skill", "test") {
+            root {
                 display("skill1") {
                     description = "desc"
                 }
@@ -31,7 +31,7 @@ class SkillAdvancements(private val datapackRootPath: String) {
                 merge(sub)
 
                 advancement("child2") {
-                    display("skill11-2") {}
+                    display("skill11-2")
                 }
             }
         }
