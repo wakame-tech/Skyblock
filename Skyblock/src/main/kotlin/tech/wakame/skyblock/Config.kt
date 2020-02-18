@@ -8,7 +8,7 @@ object Config {
     val islands: MutableMap<String, Island> = mutableMapOf()
 
     fun save(config: Configuration) {
-        config.set("version", Skyblock.VERSION)
+        config.set("version", SkyBlock.VERSION)
         islands.forEach { (id, island) ->
             val path = "islands.$id"
             config.createSection(path)

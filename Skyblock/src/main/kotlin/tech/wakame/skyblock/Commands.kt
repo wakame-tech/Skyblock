@@ -9,9 +9,10 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import tech.wakame.skyblock.Skyblock.Companion.wePlugin
+import tech.wakame.skyblock.SkyBlock.Companion.wePlugin
 import tech.wakame.skyblock.api.*
 import tech.wakame.skyblock.skills.Palette
+import tech.wakame.skyblock.util.uuid
 import java.lang.Exception
 import kotlin.math.roundToInt
 
@@ -25,8 +26,9 @@ object Commands {
     private fun palette(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
 
-        Skyblock.commandPalettes.putIfAbsent(sender.uniqueId.toString(), Palette())
-        Skyblock.commandPalettes[sender.uniqueId.toString()]?.open(sender)
+        Palette.store.getOrPut(sender.uuid) { Palette() }.also {
+            it.open(sender)
+        }
         return true
     }
 

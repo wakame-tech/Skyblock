@@ -4,29 +4,20 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.Server
-import org.bukkit.entity.Player
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import tech.wakame.skyblock.skills.Palette
 import tech.wakame.skyblock.skills.SkillManager
-import tech.wakame.skyblock.skills.TestSkill1
-import tech.wakame.skyblock.util.InventoryUI
-import tech.wakame.skyblock.util.Option
+import tech.wakame.skyblock.skills.FireSkill
 import java.lang.Exception
 import java.util.logging.Logger
 
-class Skyblock : JavaPlugin() {
+class SkyBlock : JavaPlugin() {
     override fun onEnable() { // Plugin startup logic
         Config.load(config)
 
         server.spigot().broadcast(*welcomeMessage())
 
-        // event handler
-        server.pluginManager.registerEvents(SkyblockEventListener(), this)
+        SkyBlockEventListener(this)
 
         // command executor
         for ((name, executor) in Commands.commands) {
@@ -40,14 +31,14 @@ class Skyblock : JavaPlugin() {
             throw Exception("need dependency WorldEdit")
         }
 
-        Skyblock.logger = logger
-        Skyblock.wePlugin = plugin
-        Skyblock.server = server
+        SkyBlock.logger = logger
+        SkyBlock.wePlugin = plugin
+        SkyBlock.server = server
         // datapacks/<datapack>
-        Skyblock.dataPackRootPath = dataFolder.resolve("../../void/datapacks/skyblock").path
+        SkyBlock.dataPackRootPath = dataFolder.resolve("../../void/datapacks/skyblock").path
 
         val skillManager = SkillManager()
-        skillManager.register(TestSkill1)
+        skillManager.register(FireSkill)
         skillManager.status()
     }
 
@@ -57,7 +48,7 @@ class Skyblock : JavaPlugin() {
     }
 
     companion object {
-        const val VERSION = "0.0.2"
+        const val VERSION = "0.1.0"
         const val SkyBlockSettingsName = "settings"
 
         lateinit var logger: Logger
@@ -65,11 +56,9 @@ class Skyblock : JavaPlugin() {
         lateinit var server: Server
         lateinit var dataPackRootPath: String
 
-        val commandPalettes: MutableMap<String, Palette> = mutableMapOf()
-
         fun welcomeMessage(): Array<TextComponent> {
             return arrayOf(
-                    TextComponent("Skyblock v$VERSION").apply {
+                    TextComponent("SkyBlock v$VERSION").apply {
                         color = ChatColor.YELLOW
                         isBold = true
                     },

@@ -609,12 +609,6 @@
     },
     "done": true
   },
-  "skill:test_skill_1/root": {
-    "criteria": {
-      "a": "2020-02-18 15:46:52 +0900"
-    },
-    "done": true
-  },
   "minecraft:recipes/decorations/orange_bed": {
     "criteria": {
       "has_the_recipe": "2020-02-16 14:33:31 +0900",
@@ -1193,12 +1187,6 @@
     "criteria": {
       "has_cobblestone": "2020-02-16 14:33:31 +0900",
       "has_the_recipe": "2020-02-16 14:33:31 +0900"
-    },
-    "done": true
-  },
-  "skill:test_skill_1/2": {
-    "criteria": {
-      "a": "2020-02-18 15:46:41 +0900"
     },
     "done": true
   },
@@ -1799,6 +1787,12 @@
       "has_sand": "2020-02-16 14:33:31 +0900",
       "has_the_recipe": "2020-02-16 14:33:31 +0900",
       "has_gravel": "2020-02-16 14:33:31 +0900"
+    },
+    "done": true
+  },
+  "skill:fire_skill/root": {
+    "criteria": {
+      "c1": "2020-02-19 01:52:36 +0900"
     },
     "done": true
   },
@@ -3981,6 +3975,12 @@
     },
     "done": true
   },
+  "skill:fire_skill/f-2": {
+    "criteria": {
+      "c1": "2020-02-19 01:54:11 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/combat/crossbow": {
     "criteria": {
       "has_string": "2020-02-16 14:33:32 +0900",
@@ -3997,9 +3997,33 @@
     },
     "done": true
   },
+  "skill:fire_skill/f-1": {
+    "criteria": {
+      "c1": "2020-02-19 01:53:09 +0900"
+    },
+    "done": true
+  },
+  "skill:fire_skill/f-6": {
+    "criteria": {
+      "c1": "2020-02-19 01:54:11 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/building_blocks/yellow_wool": {
     "criteria": {
       "has_white_wool": "2020-02-12 19:31:24 +0900"
+    },
+    "done": true
+  },
+  "skill:fire_skill/f-5": {
+    "criteria": {
+      "c1": "2020-02-19 01:53:09 +0900"
+    },
+    "done": true
+  },
+  "skill:fire_skill/f-4": {
+    "criteria": {
+      "c1": "2020-02-19 01:54:11 +0900"
     },
     "done": true
   },
@@ -4007,6 +4031,12 @@
     "criteria": {
       "has_porkchop": "2020-02-16 14:33:32 +0900",
       "has_the_recipe": "2020-02-16 14:33:32 +0900"
+    },
+    "done": true
+  },
+  "skill:fire_skill/f-3": {
+    "criteria": {
+      "c1": "2020-02-19 01:53:09 +0900"
     },
     "done": true
   },
@@ -4021,6 +4051,12 @@
     "criteria": {
       "has_prismarine_shard": "2020-02-16 14:33:32 +0900",
       "has_the_recipe": "2020-02-16 14:33:32 +0900"
+    },
+    "done": true
+  },
+  "skill:fire_skill/f-7": {
+    "criteria": {
+      "c1": "2020-02-19 01:53:09 +0900"
     },
     "done": true
   },

@@ -1,10 +1,10 @@
 
 import org.junit.Test
-import tech.wakame.skyblock.skills.TestSkill1
+import tech.wakame.skyblock.skills.FireSkill
 
 class AdvancementsDslTest {
     @Test
     fun test() {
-        TestSkill1.dumpJson("./../data/void/datapacks/skyblock")
+        FireSkill.dumpJson("./../data/void/datapacks/skyblock")
     }
 }
