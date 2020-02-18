@@ -16,7 +16,10 @@ annotation class AdvancementMarker
 
 @AdvancementMarker
 class AdvancementsDSL(private val datapackName: String, private val namespace: String, private val treeName: String, init: AdvancementRoot.() -> AdvancementTree) {
-    var rootTree: AdvancementTree = init(AdvancementRoot(namespace, treeName))
+    private var rootTree: AdvancementTree = init(AdvancementRoot(namespace, treeName))
+
+    val name: String
+    get() = treeName
 
     val advancementSerializer = JsonSerializer<Advancement> { src, _, context ->
         JsonObject().apply {
@@ -46,7 +49,8 @@ class AdvancementsDSL(private val datapackName: String, private val namespace: S
         }
     }
 
-    fun dumpJson(datapackRootPath: String) {
+    // dataPackRootPath includes datapack name
+    fun dumpJson(dataPackRootPath: String) {
         val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(Advancement::class.java, advancementSerializer)
         gsonBuilder.registerTypeAdapter(Criterion::class.java, criterionSerializer)
@@ -57,13 +61,13 @@ class AdvancementsDSL(private val datapackName: String, private val namespace: S
         println("[Tree $treeName]")
         rootTree.traverse { adv, _ ->
             val json = gson.toJson(adv)
-            val folder = File(datapackRootPath).resolve("./${datapackName}/data/${namespace}/advancements/${treeName}")
+            val folder = File(dataPackRootPath).resolve("./data/${namespace}/advancements/${treeName}")
             if (!folder.exists())
                 folder.mkdirs()
             val key = adv.name.key.split("/").last()
             val file = folder.resolve("./${key}.json")
             file.writeText(json)
-            println("[DUMP] ${adv.name} at ${file.toRelativeString(File(datapackRootPath))}")
+            println("[DUMP] ${adv.name} at ${file.toRelativeString(File(dataPackRootPath))}")
         }
 
         rootTree.traverse { adv, d ->

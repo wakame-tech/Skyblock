@@ -10,6 +10,8 @@
 /data/plugins/WorldEdit/*
 !/data/plugins/WorldEdit/schematics
 
+.mcmeta
+
 # Gradle Project
 .gradle
 .idea

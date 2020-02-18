@@ -609,6 +609,12 @@
     },
     "done": true
   },
+  "skill:test_skill_1/root": {
+    "criteria": {
+      "a": "2020-02-18 15:46:52 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/decorations/orange_bed": {
     "criteria": {
       "has_the_recipe": "2020-02-16 14:33:31 +0900",
@@ -1187,6 +1193,12 @@
     "criteria": {
       "has_cobblestone": "2020-02-16 14:33:31 +0900",
       "has_the_recipe": "2020-02-16 14:33:31 +0900"
+    },
+    "done": true
+  },
+  "skill:test_skill_1/2": {
+    "criteria": {
+      "a": "2020-02-18 15:46:41 +0900"
     },
     "done": true
   },
@@ -2398,12 +2410,6 @@
   "minecraft:story/cure_zombie_villager": {
     "criteria": {
       "cured_zombie": "2020-02-16 14:33:31 +0900"
-    },
-    "done": true
-  },
-  "skill:skill1/root": {
-    "criteria": {
-      "a": "2020-02-16 22:16:00 +0900"
     },
     "done": true
   },

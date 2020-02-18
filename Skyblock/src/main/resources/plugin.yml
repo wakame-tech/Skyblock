@@ -7,3 +7,5 @@ commands:
     description: list islands
   island:
     description: register island <name>
+  palette:
+    description: edit command palette

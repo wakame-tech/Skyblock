@@ -11,14 +11,24 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import tech.wakame.skyblock.Skyblock.Companion.wePlugin
 import tech.wakame.skyblock.api.*
+import tech.wakame.skyblock.skills.Palette
 import java.lang.Exception
 import kotlin.math.roundToInt
 
 object Commands {
     val commands: Map<String, CommandExecutor> = mapOf(
             "island" to CommandExecutor(::island),
-            "islands" to CommandExecutor(::islands)
+            "islands" to CommandExecutor(::islands),
+            "palette" to CommandExecutor(::palette)
     )
+
+    private fun palette(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (sender !is Player) return false
+
+        Skyblock.commandPalettes.putIfAbsent(sender.uniqueId.toString(), Palette())
+        Skyblock.commandPalettes[sender.uniqueId.toString()]?.open(sender)
+        return true
+    }
 
     /*
     *  Usage
