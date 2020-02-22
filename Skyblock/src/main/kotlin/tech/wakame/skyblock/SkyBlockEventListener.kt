@@ -4,6 +4,7 @@ import fr.minuskube.netherboard.Netherboard
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -38,13 +39,28 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
             return
         }
         val use = event.player.inventory.itemInMainHand
-        if (use.type != Material.SNOWBALL || !use.hasItemMeta()) {
-            return
+        when (use.type) {
+            Material.SNOWBALL -> {
+                if (use.type != Material.SNOWBALL || !use.hasItemMeta()) {
+                    return
+                }
+                if (use in Palette.presets) {
+                    event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
+                    meta.set()
+                }
+            }
+            Material.ENDER_EYE -> {
+                val block = event.clickedBlock ?: return
+                // unfilled: 0 - 3, filled: 4 - 7
+                val eyeUnfilled = block.data < 4.toByte()
+                if (block.type == Material.END_PORTAL_FRAME && eyeUnfilled) {
+                    event.player.sendTitle("島を攻略した!!", "攻略率 1 / 1")
+                }
+            }
+            else -> return
         }
-        if (use in Palette.presets) {
-            event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
-            meta.set()
-        }
+
+
     }
 
 //    @EventHandler

@@ -1,6 +1,6 @@
 name: Skyblock
 version: @version@
-main: tech.wakame.skyblock.Skyblock
+main: tech.wakame.skyblock.SkyBlock
 api-version: 1.13
 commands:
   islands:

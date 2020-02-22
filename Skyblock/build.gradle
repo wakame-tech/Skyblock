@@ -64,7 +64,7 @@ compileTestKotlin {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'tech.wakame.skyblock.Skyblock'
+        attributes 'Main-Class': 'tech.wakame.skyblock.SkyBlock'
     }
 
     from configurations.embed.collect {
@@ -83,7 +83,14 @@ processResources {
 build {
     doLast {
         exec {
+            // copy plugin jar
             commandLine 'cp', 'build/libs/*', '~/Documents/spigot/data/plugins'
+        }
+
+        exec {
+            // minecraft server reload in container
+            commandLine 'cd', '~/Documents/spigot'
+            commandLine 'docker-compose', 'exec', '-d', 'spigot-server', 'mc_send', '"reload"'
         }
     }
 }
