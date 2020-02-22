@@ -60,7 +60,7 @@ class SkyBlock : JavaPlugin() {
 
         fun welcomeMessage(): Array<TextComponent> {
             return arrayOf(
-                    TextComponent("SkyBlock v$VERSION").apply {
+                    TextComponent("SkyBlock $VERSION").apply {
                         color = ChatColor.YELLOW
                         isBold = true
                     },

@@ -4,15 +4,19 @@ import fr.minuskube.netherboard.Netherboard
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
-import org.bukkit.block.data.BlockData
+import org.bukkit.block.Chest
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.entity.Villager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.*
+import tech.wakame.skyblock.api.convertChestToMerchantRecipes
 import tech.wakame.skyblock.skills.Palette
 import tech.wakame.skyblock.util.PlayerMetaData
+import tech.wakame.skyblock.util.colored
 import tech.wakame.skyblock.util.uuid
 
 class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
@@ -32,35 +36,52 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
     }
 
     @EventHandler
-    fun onPlayerInteract(event: PlayerInteractEvent) {
+    fun useSkill(event: PlayerInteractEvent) {
+        val use = event.player.inventory.itemInMainHand
+        if (use.type != Material.SNOWBALL) return
         val meta = PlayerMetaData(event.player, plugin)
         if (meta.get()) {
             // in cool time
             return
         }
-        val use = event.player.inventory.itemInMainHand
-        when (use.type) {
-            Material.SNOWBALL -> {
-                if (use.type != Material.SNOWBALL || !use.hasItemMeta()) {
-                    return
-                }
-                if (use in Palette.presets) {
-                    event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
-                    meta.set()
-                }
-            }
-            Material.ENDER_EYE -> {
-                val block = event.clickedBlock ?: return
-                // unfilled: 0 - 3, filled: 4 - 7
-                val eyeUnfilled = block.data < 4.toByte()
-                if (block.type == Material.END_PORTAL_FRAME && eyeUnfilled) {
-                    event.player.sendTitle("島を攻略した!!", "攻略率 1 / 1")
-                }
-            }
-            else -> return
+        if (use.type != Material.SNOWBALL || !use.hasItemMeta()) {
+            return
         }
+        if (use in Palette.presets) {
+            event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
+            meta.set()
+        }
+    }
 
+    @EventHandler
+    fun convertMerchant(event: PlayerInteractEvent) {
+        val use = event.player.inventory.itemInMainHand
+        if (use.type != Material.BLAZE_ROD) return
+        val block = event.clickedBlock ?: return
+        if (block.type != Material.CHEST) {
+            return
+        }
+        val up = block.location.add(0.0, 1.0, 0.0)
+        val chest = block.state as Chest
+        val villager = event.player.world.spawnEntity(up, EntityType.VILLAGER) as Villager
+        villager.apply {
+            profession = Villager.Profession.FARMER
+            // tradable level
+            villagerLevel = 2
+            recipes = convertChestToMerchantRecipes(chest)
+        }
+    }
 
+    @EventHandler
+    fun captureIsland(event: PlayerInteractEvent) {
+        val use = event.player.inventory.itemInMainHand
+        if (use.type != Material.ENDER_EYE) return
+        val block = event.clickedBlock ?: return
+        // unfilled: 0 - 3, filled: 4 - 7
+        val eyeUnfilled = block.data < 4.toByte()
+        if (block.type == Material.END_PORTAL_FRAME && eyeUnfilled) {
+            event.player.sendTitle("yellow{島を攻略した!!}".colored(), "攻略率 1 / 1")
+        }
     }
 
 //    @EventHandler

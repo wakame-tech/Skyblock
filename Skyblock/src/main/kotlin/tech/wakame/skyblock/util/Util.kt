@@ -57,3 +57,12 @@ class PlayerMetaData(private val player: Player, private val plugin: SkyBlock) {
 
     fun get() = player.getMetadata(KEY).firstOrNull()?.asBoolean() ?: false
 }
+
+// iterated to column
+inline fun <reified T, R> Array<T>.mapColumned(width: Int, transform: (List<T>) -> R): List<R> {
+    val columns = this.size.div(width)
+    return (0 until width).map{ i ->
+        val items = List(columns) { this[it * width + i] }
+        transform(items)
+    }
+}

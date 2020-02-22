@@ -21,7 +21,7 @@ class AdvancementsDSL(private val datapackName: String, private val namespace: S
     val name: String
     get() = treeName
 
-    val advancementSerializer = JsonSerializer<Advancement> { src, _, context ->
+    private val advancementSerializer = JsonSerializer<Advancement> { src, _, context ->
         JsonObject().apply {
             addProperty("name", src.name.toString())
             if (src.display != null) {
@@ -40,7 +40,7 @@ class AdvancementsDSL(private val datapackName: String, private val namespace: S
         }
     }
 
-    val criterionSerializer = JsonSerializer<Criterion> { src, _, context ->
+    private val criterionSerializer = JsonSerializer<Criterion> { src, _, context ->
         JsonObject().apply {
             addProperty("trigger", src.trigger.toString())
             if (src.conditions.isNotEmpty()) {
