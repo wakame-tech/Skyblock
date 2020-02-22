@@ -13,6 +13,8 @@ import java.util.logging.Logger
 
 class SkyBlock : JavaPlugin() {
     override fun onEnable() { // Plugin startup logic
+        VERSION = description.version
+
         Config.load(config)
 
         server.spigot().broadcast(*welcomeMessage())
@@ -48,7 +50,7 @@ class SkyBlock : JavaPlugin() {
     }
 
     companion object {
-        const val VERSION = "0.1.0"
+        lateinit var VERSION: String
         const val SkyBlockSettingsName = "settings"
 
         lateinit var logger: Logger
