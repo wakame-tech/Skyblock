@@ -26,10 +26,11 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        event.player.spigot().sendMessage(TextComponent("Hello, SkyBlock!").apply {
-            color = ChatColor.BLUE
-            isBold = true
-        })
+//        event.player.spigot().sendMessage(TextComponent("Hello, SkyBlock!").apply {
+//            color = ChatColor.BLUE
+//            isBold = true
+//        })
+        event.player.sendTitle("yellow{SkyBlock(仮称)}", SkyBlock.VERSION)
         Netherboard.instance().createBoard(event.player, "ステータス")
 
         // event.player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 30.0

@@ -107,10 +107,10 @@ build {
             commandLine 'cp', "build/libs/SkyBlock-${build_version}.jar", "$serverPath/data/plugins"
         }
 
-        exec {
-            // minecraft server reload in container
-            commandLine 'cd', serverPath
-            commandLine 'docker-compose', 'exec', '-d', 'spigot-server', 'mc_send', '"plugman reload Skyblock"'
-        }
+//        exec {
+//            // minecraft server reload in container
+//            commandLine 'cd', serverPath
+//            commandLine 'docker-compose', 'exec', '-d', 'spigot-server', 'mc_send', '"plugman reload Skyblock"'
+//        }
     }
 }
