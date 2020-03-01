@@ -9,5 +9,5 @@ services:
         stdin_open: true
         environment: 
             "EULA": "true"
-            "SPIGOT_VER": "latest"
+            "SPIGOT_VER": "1.14.4"
             "MC_MAXMEM": "4g"

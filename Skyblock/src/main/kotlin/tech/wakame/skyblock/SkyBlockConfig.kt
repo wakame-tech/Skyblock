@@ -4,11 +4,10 @@ import org.bukkit.configuration.Configuration
 import tech.wakame.skyblock.api.Island
 
 
-object Config {
+object SkyBlockConfig {
     val islands: MutableMap<String, Island> = mutableMapOf()
 
     fun save(config: Configuration) {
-        config.set("version", SkyBlock.VERSION)
         islands.forEach { (id, island) ->
             val path = "islands.$id"
             config.createSection(path)

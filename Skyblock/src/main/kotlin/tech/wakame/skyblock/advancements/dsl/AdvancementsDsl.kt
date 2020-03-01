@@ -1,11 +1,16 @@
 package tech.wakame.skyblock.advancements.dsl
 
 import com.google.gson.*
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import tech.wakame.skyblock.advancements.dsl.elements.Advancement
 import tech.wakame.skyblock.advancements.dsl.elements.Criterion
 import tech.wakame.skyblock.advancements.dsl.elements.Display
 import tech.wakame.skyblock.advancements.dsl.elements.Rewards
+import tech.wakame.skyblock.util.renamed
 import java.io.File
+import java.nio.file.Path
 
 data class Key(val namespace: String, val key: String) {
     override fun toString() = "$namespace:$key"
@@ -14,12 +19,13 @@ data class Key(val namespace: String, val key: String) {
 @DslMarker
 annotation class AdvancementMarker
 
+// TODO: lazy structure checking
 @AdvancementMarker
 class AdvancementsDSL(private val datapackName: String, private val namespace: String, private val treeName: String, init: AdvancementRoot.() -> AdvancementTree) {
     private var rootTree: AdvancementTree = init(AdvancementRoot(namespace, treeName))
 
     val name: String
-    get() = treeName
+        get() = treeName
 
     private val advancementSerializer = JsonSerializer<Advancement> { src, _, context ->
         JsonObject().apply {
@@ -32,6 +38,9 @@ class AdvancementsDSL(private val datapackName: String, private val namespace: S
             }
             if (src.rewards != null) {
                 add("rewards", context.serialize(src.rewards))
+            }
+            if (src.criteria.isEmpty()) {
+                throw Exception("Advancement ${src.name} Criteria cannot be empty")
             }
             add("criteria", context.serialize(src.criteria))
             if (src.parent != null) {
@@ -47,6 +56,17 @@ class AdvancementsDSL(private val datapackName: String, private val namespace: S
                 add("conditions", context.serialize(src.conditions))
             }
         }
+    }
+
+    // list of itemstack
+    fun catalog(): List<ItemStack> {
+        val list = mutableListOf<ItemStack>()
+        rootTree.traverse { adv, _ ->
+            val icon = adv.display?.icon?.item?.let { Material.matchMaterial(it) } ?: Material.STONE
+            val name = adv.display?.title ?: adv.name.toString()
+            list += ItemStack(icon, 1).renamed("yellow{[スキル] $name}")
+        }
+        return list
     }
 
     // dataPackRootPath includes datapack name
@@ -137,7 +157,8 @@ class AdvancementContext(private val parent: Advancement?, private val namespace
         val name = Key(namespace, "${treeName}/$key")
 
         if (criteria.isEmpty()) {
-            throw Exception("Advancement $name Criteria cannot be empty")
+            print("Advancement $name Criteria cannot be empty")
+            // throw Exception("Advancement $name Criteria cannot be empty")
         }
 
         val self = Advancement(parent, name, display, requirements, criteria)

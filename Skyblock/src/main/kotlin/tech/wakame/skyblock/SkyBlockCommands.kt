@@ -11,17 +11,35 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import tech.wakame.skyblock.SkyBlock.Companion.wePlugin
 import tech.wakame.skyblock.api.*
-import tech.wakame.skyblock.skills.Palette
+import tech.wakame.skyblock.util.Palette
+import tech.wakame.skyblock.util.IUI
+import tech.wakame.skyblock.util.colored
 import tech.wakame.skyblock.util.uuid
 import java.lang.Exception
 import kotlin.math.roundToInt
 
-object Commands {
-    val commands: Map<String, CommandExecutor> = mapOf(
-            "island" to CommandExecutor(::island),
-            "islands" to CommandExecutor(::islands),
-            "palette" to CommandExecutor(::palette)
-    )
+class SkyBlockCommands(private val plugin: SkyBlock) {
+    init {
+        val commands = mapOf(
+                "island" to CommandExecutor(::island),
+                "islands" to CommandExecutor(::islands),
+                "palette" to CommandExecutor(::palette),
+                "catalog" to CommandExecutor(::catalog),
+                "genskill" to CommandExecutor(::generateAdvancements)
+        )
+
+        // command executor
+        for ((name, executor) in commands) {
+            plugin.getCommand(name)?.setExecutor(executor)
+        }
+    }
+
+    private fun generateAdvancements(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (sender !is Player) return false
+
+        plugin.skillManager.generateAllSkills(sender)
+        return true
+    }
 
     private fun palette(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
@@ -29,6 +47,13 @@ object Commands {
         Palette.store.getOrPut(sender.uuid) { Palette() }.also {
             it.open(sender)
         }
+        return true
+    }
+
+    private fun catalog(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (sender !is Player) return false
+
+        IUI.catalog.open(sender)
         return true
     }
 
@@ -62,7 +87,7 @@ object Commands {
 
                 try {
                     saveSchematic(clipboard, player.editSession(), id)
-                    Config.addIsland(Island(name, id, location))
+                    SkyBlockConfig.addIsland(Island(name, id, location))
                     sender.sendMessage("new island $name($id) registered!")
                     sender.sendMessage("complete operation")
                 } catch (e: Exception) {
@@ -72,7 +97,7 @@ object Commands {
                 }
             }
             "load" -> {
-                if (!Config.islands.containsKey(id)) {
+                if (!SkyBlockConfig.islands.containsKey(id)) {
                     sender.sendMessage("island $id not found")
                     return false
                 }
@@ -93,7 +118,7 @@ object Commands {
         if (sender !is Player) return false
         fun Location.round() = Triple(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
-        val message = Config.islands.map { (id, island) ->
+        val message = SkyBlockConfig.islands.map { (id, island) ->
             val (x, y, z) = island.location.round()
             TextComponent().apply {
                 addExtra(TextComponent("%-10s".format("${island.name}($id)")).apply {

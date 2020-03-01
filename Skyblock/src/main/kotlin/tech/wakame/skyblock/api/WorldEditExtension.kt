@@ -10,11 +10,14 @@ import com.sk89q.worldedit.function.operation.Operations
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.regions.Region
 import com.sk89q.worldedit.session.ClipboardHolder
+import org.bukkit.Bukkit
 import tech.wakame.skyblock.SkyBlock
 import java.io.File
 import kotlin.Exception
 
 fun BukkitPlayer.paste(clipboard: Clipboard) {
+    Bukkit.getPluginManager().getPlugin("WorldEdit")
+
     // https://www.spigotmc.org/threads/1-13-load-paste-schematics-with-the-worldedit-api-simplified.357335/
     val es = SkyBlock.wePlugin.worldEdit.editSessionFactory.getEditSession(this.world, -1)
     val op = ClipboardHolder(clipboard)

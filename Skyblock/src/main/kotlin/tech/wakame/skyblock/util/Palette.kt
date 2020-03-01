@@ -1,4 +1,4 @@
-package tech.wakame.skyblock.skills
+package tech.wakame.skyblock.util
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -7,7 +7,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import tech.wakame.skyblock.util.colored
 
 class Palette : InventoryHolder {
     var visible: Boolean = false

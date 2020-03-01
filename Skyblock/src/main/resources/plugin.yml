@@ -10,3 +10,7 @@ commands:
     description: register island <name>
   palette:
     description: edit command palette
+  catalog:
+    description: open catalog
+  genskill:
+    description: generate all skills

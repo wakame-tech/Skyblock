@@ -6,6 +6,7 @@
 - [WorldEditSelectionVisualizer](https://www.spigotmc.org/resources/worldeditselectionvisualizer-1-7-1-15.17311/)
 - [Netherboard v1.1.3](https://github.com/MinusKube/Netherboard/releases)
 - [Iris ToolBox v1.1(Skript)](https://forum.civa.jp/viewtopic.php?f=15&t=63)
+- [AutoSaveWorld](https://dev.bukkit.org/projects/autosaveworld)
 - [Skyblock v0.1(自作プラグイン)](https://github.com/wakame-tech/Skyblock)
 
 ## ✨ プラグインの機能

@@ -1,4 +1,4 @@
-package tech.wakame.skyblock.skills
+package tech.wakame.skyblock.resources.skills
 
 import tech.wakame.skyblock.advancements.dsl.AdvancementsDSL
 import tech.wakame.skyblock.advancements.dsl.elements.Criterion
@@ -7,7 +7,10 @@ import tech.wakame.skyblock.advancements.dsl.elements.DisplayIcon
 
 val FireSkill = AdvancementsDSL("skyblock", "skill", "fire_skill") {
     root {
-        display("炎の心") { description = "炎魔法見習い" }
+        display("炎の心") {
+            icon = DisplayIcon("minecraft:fire_charge")
+            description = "炎魔法見習い"
+        }
         criteria { criterion("c1") { Criterion.impossible } }
         rewards { experience = 100 }
 

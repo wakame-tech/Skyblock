@@ -1,6 +1,6 @@
 
 import org.junit.Test
-import tech.wakame.skyblock.skills.FireSkill
+import tech.wakame.skyblock.resources.skills.FireSkill
 
 class AdvancementsDslTest {
     @Test

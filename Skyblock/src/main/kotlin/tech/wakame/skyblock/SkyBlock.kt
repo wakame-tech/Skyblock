@@ -4,79 +4,74 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.Server
 import org.bukkit.plugin.java.JavaPlugin
-import tech.wakame.skyblock.skills.SkillManager
-import tech.wakame.skyblock.skills.FireSkill
+import tech.wakame.skyblock.util.SkillManager
+import tech.wakame.skyblock.util.broadcast
 import java.lang.Exception
-import java.util.logging.Logger
 
 class SkyBlock : JavaPlugin() {
+    val skillManager: SkillManager = SkillManager(this)
+    lateinit var dataPackPath: String
+
     override fun onEnable() { // Plugin startup logic
-        VERSION = description.version
-
-        Config.load(config)
-
-        server.spigot().broadcast(*welcomeMessage())
-
+        SkyBlockConfig.load(config)
         SkyBlockEventListener(this)
-
-        // command executor
-        for ((name, executor) in Commands.commands) {
-            getCommand(name)?.setExecutor(executor)
-        }
+        SkyBlockCommands(this)
 
         // bind WorldEdit
         val plugin = server.pluginManager.getPlugin("WorldEdit") as? WorldEditPlugin
         if (plugin == null) {
             logger.warning("need dependency WorldEdit")
+            server.broadcast("red{need dependency WorldEdit}")
             throw Exception("need dependency WorldEdit")
         }
 
-        SkyBlock.logger = logger
-        SkyBlock.wePlugin = plugin
-        SkyBlock.server = server
-        // datapacks/<datapack>
-        SkyBlock.dataPackRootPath = dataFolder.resolve("../../void/datapacks/skyblock").path
+        skillManager.status()
+        wePlugin = plugin
 
-        val skillManager = SkillManager()
-        skillManager.register(FireSkill)
+        // datapacks/<datapack>
+        val dataPackFolder = dataFolder.resolve("../../${server.worlds[0].name}/datapacks")
+        if (!dataPackFolder.exists()) {
+            logger.warning("datapack folder not found")
+            server.broadcast("red{datapack folder not found}")
+            throw Exception("datapack folder not found")
+        }
+
+        dataPackPath = dataPackFolder.resolve("./skyblock").canonicalPath
+        server.broadcast("Datapack Path: $dataPackPath")
+
+        server.spigot().broadcast(*welcomeMessage())
+
         skillManager.status()
     }
 
     override fun onDisable() { // Plugin shutdown logic
-        Config.save(config)
+        SkyBlockConfig.save(config)
         saveConfig()
     }
 
+    private fun welcomeMessage(): Array<TextComponent> {
+        return arrayOf(
+                TextComponent("SkyBlock ${description.version}").apply {
+                    color = ChatColor.YELLOW
+                    isBold = true
+                },
+                TextComponent("\n"),
+                TextComponent("Git repo ").apply {
+                    val link = TextComponent("here").apply {
+                        isUnderlined = true
+                        color = ChatColor.BLUE
+                        clickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/wakame-tech/Skyblock")
+                    }
+                    addExtra(link)
+                },
+                TextComponent("\n"),
+                TextComponent("${SkyBlockConfig.islands.size} islands loaded"),
+                TextComponent("\n")
+        )
+    }
+
     companion object {
-        lateinit var VERSION: String
-        const val SkyBlockSettingsName = "settings"
-
-        lateinit var logger: Logger
         lateinit var wePlugin: WorldEditPlugin
-        lateinit var server: Server
-        lateinit var dataPackRootPath: String
-
-        fun welcomeMessage(): Array<TextComponent> {
-            return arrayOf(
-                    TextComponent("SkyBlock $VERSION").apply {
-                        color = ChatColor.YELLOW
-                        isBold = true
-                    },
-                    TextComponent("\n"),
-                    TextComponent("Git repo ").apply {
-                        val link = TextComponent("here").apply {
-                            isUnderlined = true
-                            color = ChatColor.BLUE
-                            clickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/wakame-tech/Skyblock")
-                        }
-                        addExtra(link)
-                    },
-                    TextComponent("\n"),
-                    TextComponent("${Config.islands.size} islands loaded"),
-                    TextComponent("\n")
-            )
-        }
     }
 }

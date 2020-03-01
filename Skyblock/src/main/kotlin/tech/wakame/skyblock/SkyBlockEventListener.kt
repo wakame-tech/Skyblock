@@ -1,8 +1,6 @@
 package tech.wakame.skyblock
 
 import fr.minuskube.netherboard.Netherboard
-import net.md_5.bungee.api.ChatColor
-import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Material
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
@@ -14,7 +12,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.*
 import tech.wakame.skyblock.api.convertChestToMerchantRecipes
-import tech.wakame.skyblock.skills.Palette
+import tech.wakame.skyblock.util.Palette
+import tech.wakame.skyblock.util.IUI
 import tech.wakame.skyblock.util.PlayerMetaData
 import tech.wakame.skyblock.util.colored
 import tech.wakame.skyblock.util.uuid
@@ -26,11 +25,7 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-//        event.player.spigot().sendMessage(TextComponent("Hello, SkyBlock!").apply {
-//            color = ChatColor.BLUE
-//            isBold = true
-//        })
-        event.player.sendTitle("yellow{SkyBlock(仮称)}", SkyBlock.VERSION)
+        event.player.sendTitle("yellow{SkyBlock(仮称)}".colored(), plugin.description.version)
         Netherboard.instance().createBoard(event.player, "ステータス")
 
         // event.player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 30.0
@@ -115,6 +110,8 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
         if (Palette.store[player.uuid]?.visible == true) {
             event.isCancelled = true
         }
+
+        IUI.catalog.onClick(event)
     }
 
     @EventHandler
