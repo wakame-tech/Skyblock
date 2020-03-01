@@ -40,7 +40,7 @@ ext {
     hash = desc.matches(".*-[0-9]+-g[0-9a-f]{7}") ? "-SNAPSHOT" : ""
     dirty = git.status().isClean() ? "" : "+dirty"
     // build_version = desc + hash + dirty
-    build_version = desc
+    build_version = version // desc
 }
 
 group = pluginGroup
@@ -52,7 +52,8 @@ configurations {
 }
 
 dependencies {
-    // compile files('libs/VillagerTradeApi.jar')
+    embed files('libs/EffectLib-6.2.jar')
+    embed files('libs/fastparticles-1.2.3.jar')
     compile 'fr.minuskube:netherboard-bukkit:1.1.3'
     testCompile 'org.jetbrains.kotlin:kotlin-test-junit'
     implementation 'com.google.code.gson:gson:2.8.6'

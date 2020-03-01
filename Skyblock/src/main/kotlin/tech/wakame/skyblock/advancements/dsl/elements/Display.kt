@@ -20,5 +20,6 @@ class Display(
         var frame: DisplayFrame = DisplayFrame.Task,
         var showToast: Boolean = false,
         var announceToChat: Boolean = false,
-        var hidden: Boolean = true
+        var hidden: Boolean = true,
+        var background: String? = null
 )

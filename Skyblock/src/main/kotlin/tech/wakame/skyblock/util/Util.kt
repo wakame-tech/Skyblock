@@ -3,11 +3,14 @@ package tech.wakame.skyblock.util
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.Server
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.metadata.FixedMetadataValue
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.potion.PotionEffect
 import org.bukkit.scheduler.BukkitRunnable
 import tech.wakame.skyblock.SkyBlock
@@ -60,6 +63,26 @@ fun ItemStack.effected(effect: PotionEffect): ItemStack {
             addCustomEffect(effect, true)
         }
     }
+}
+
+fun ItemStack.enchanted(enchant: Enchantment, level: Int): ItemStack {
+    return this.apply {
+        itemMeta = itemMeta?.apply {
+            addEnchantment(enchant, level)
+        }
+    }
+}
+
+fun ItemStack.addTag(key: NamespacedKey, value: String): ItemStack {
+    return this.apply {
+        itemMeta = itemMeta?.apply {
+            persistentDataContainer.set(key, PersistentDataType.STRING, value)
+        }
+    }
+}
+
+fun ItemStack.getTag(key: NamespacedKey): String? {
+    return this.itemMeta?.persistentDataContainer?.get<String, String>(key, PersistentDataType.STRING)
 }
 
 class PlayerMetaData(private val player: Player, private val plugin: SkyBlock) {

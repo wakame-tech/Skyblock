@@ -9,6 +9,7 @@ val WindSkill = AdvancementsDSL("skyblock", "skill", "wind_skill") {
         display("風の心") {
             icon = DisplayIcon("minecraft:cobweb")
             description = "風魔法見習い"
+            background = "minecraft:textures/block/quartz_block_top.png"
         }
         criteria { criterion("c1") { Criterion.impossible } }
         rewards { experience = 100 }

@@ -1,9 +1,11 @@
 package tech.wakame.skyblock
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
+import de.slikey.effectlib.EffectManager
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import tech.wakame.skyblock.util.SkillManager
 import tech.wakame.skyblock.util.broadcast
@@ -11,6 +13,7 @@ import java.lang.Exception
 
 class SkyBlock : JavaPlugin() {
     val skillManager: SkillManager = SkillManager(this)
+    val effectManager: EffectManager = EffectManager(this)
     lateinit var dataPackPath: String
 
     override fun onEnable() { // Plugin startup logic
@@ -28,6 +31,7 @@ class SkyBlock : JavaPlugin() {
 
         skillManager.status()
         wePlugin = plugin
+        instance = this
 
         // datapacks/<datapack>
         val dataPackFolder = dataFolder.resolve("../../${server.worlds[0].name}/datapacks")
@@ -48,6 +52,8 @@ class SkyBlock : JavaPlugin() {
     override fun onDisable() { // Plugin shutdown logic
         SkyBlockConfig.save(config)
         saveConfig()
+        HandlerList.unregisterAll(this)
+        effectManager.dispose()
     }
 
     private fun welcomeMessage(): Array<TextComponent> {
@@ -73,5 +79,6 @@ class SkyBlock : JavaPlugin() {
 
     companion object {
         lateinit var wePlugin: WorldEditPlugin
+        lateinit var instance: SkyBlock
     }
 }

@@ -2,11 +2,14 @@ package tech.wakame.skyblock.util
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
+import tech.wakame.skyblock.SkyBlock
 
 class Palette : InventoryHolder {
     var visible: Boolean = false
@@ -15,6 +18,7 @@ class Palette : InventoryHolder {
     private val palette: Inventory = Bukkit.createInventory(this, 9, "palette")
 
     init {
+        require(presets.size == 9)
         for (i in 0 until 9) {
             palette.setItem(i, presets[i] ?: ItemStack(Material.BARRIER, 1))
         }
@@ -41,36 +45,27 @@ class Palette : InventoryHolder {
     }
 
     companion object {
+        // player UUID to Palette
         val store: MutableMap<String, Palette> = mutableMapOf()
-        val fireHeart = ItemStack(Material.SNOWBALL, 1).apply {
-            itemMeta = itemMeta?.apply {
-                setDisplayName("bold{red{火の心}}".colored())
-                lore = listOf("火属性の魔法を使うことができる")
-                addEnchant(Enchantment.LUCK, 1, false)
-            }
-        }
-        val windHeart = ItemStack(Material.SNOWBALL, 1).apply {
-            itemMeta = itemMeta?.apply {
-                setDisplayName("bold{green{風の心}}".colored())
-                lore = listOf("風属性の魔法を使うことができる")
-                addEnchant(Enchantment.LUCK, 1, false)
-            }
-        }
-        val iceHeart = ItemStack(Material.SNOWBALL, 1).apply {
-            itemMeta = itemMeta?.apply {
-                setDisplayName("bold{blue{氷の心}}".colored())
-                lore = listOf("氷属性の魔法を使うことができる")
-                addEnchant(Enchantment.LUCK, 1, false)
-            }
-        }
-        val hpUnit = ItemStack(Material.BOOK, 1).apply {
-            itemMeta = itemMeta?.apply {
-                setDisplayName("bold{yellow{HPユニット}}".colored())
-                lore = listOf("最大HPがアップする")
-                addEnchant(Enchantment.LUCK, 1, false)
-            }
-        }
+        private val paletteKey = NamespacedKey(SkyBlock.instance, "palette")
 
-        var presets: Array<ItemStack?> = arrayOf(fireHeart, windHeart, iceHeart, hpUnit, null, null, null, null, null)
+        private val fireTechDisk = ItemStack(Material.BLAZE_POWDER, 1)
+                .renamed("bold{red{フォイエ Lv.1}}")
+                .enchanted(Enchantment.LUCK, 1)
+                .addTag(paletteKey, "fire")
+        private val windTechDisk = ItemStack(Material.END_CRYSTAL, 1)
+                .renamed("bold{green{シフタ Lv.1}}")
+                .enchanted(Enchantment.LUCK, 1)
+                .addTag(paletteKey, "wind")
+        private val iceTechDisk = ItemStack(Material.ICE, 1)
+                .renamed("bold{blue{バータ Lv.1}}")
+                .enchanted(Enchantment.LUCK, 1)
+                .addTag(paletteKey, "ice")
+        private val healDisk = ItemStack(Material.NETHER_STAR, 1)
+                .renamed("bold{yellow{レスタ Lv.1}}")
+                .enchanted(Enchantment.LUCK, 1)
+                .addTag(paletteKey, "heal")
+
+        var presets: Array<ItemStack?> = arrayOf(fireTechDisk, windTechDisk, iceTechDisk, null, null, null, null, null, healDisk)
     }
 }

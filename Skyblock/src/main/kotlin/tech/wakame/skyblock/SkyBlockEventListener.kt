@@ -1,7 +1,11 @@
 package tech.wakame.skyblock
 
+import de.slikey.effectlib.effect.BleedEffect
 import fr.minuskube.netherboard.Netherboard
+import fr.mrmicky.fastparticle.FastParticle
+import fr.mrmicky.fastparticle.ParticleType
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.block.Chest
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -11,12 +15,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.*
+import org.bukkit.persistence.PersistentDataType
 import tech.wakame.skyblock.api.convertChestToMerchantRecipes
-import tech.wakame.skyblock.util.Palette
-import tech.wakame.skyblock.util.IUI
-import tech.wakame.skyblock.util.PlayerMetaData
-import tech.wakame.skyblock.util.colored
-import tech.wakame.skyblock.util.uuid
+import tech.wakame.skyblock.util.*
 
 class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
     init {
@@ -34,19 +35,42 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
     @EventHandler
     fun useSkill(event: PlayerInteractEvent) {
         val use = event.player.inventory.itemInMainHand
-        if (use.type != Material.SNOWBALL) return
+        val key = NamespacedKey(plugin, "palette")
+        val customMeta = use.getTag(key) ?: return
         val meta = PlayerMetaData(event.player, plugin)
         if (meta.get()) {
             // in cool time
             return
         }
-        if (use.type != Material.SNOWBALL || !use.hasItemMeta()) {
+        if (!use.hasItemMeta()) {
             return
         }
-        if (use in Palette.presets) {
-            event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
-            meta.set()
+        event.player.sendMessage("$customMeta")
+
+        val particle = when(customMeta) {
+            "fire" -> ParticleType.FLAME
+            "wind" -> ParticleType.EXPLOSION_NORMAL
+            "ice" -> ParticleType.SNOW_SHOVEL
+            "heal" -> ParticleType.SPELL
+            else -> return
         }
+
+        event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
+
+        // TODO
+        FastParticle.spawnParticle(event.player, particle, event.player.location, 50)
+
+//        val bleedEffect = BleedEffect(plugin.effectManager)
+//        bleedEffect.entity = event.player
+//
+//        bleedEffect.callback = Runnable {
+//            event.player.sendMessage("end")
+//        }
+//
+//        bleedEffect.iterations = 10 * 20
+//        bleedEffect.start()
+
+        meta.set()
     }
 
     @EventHandler

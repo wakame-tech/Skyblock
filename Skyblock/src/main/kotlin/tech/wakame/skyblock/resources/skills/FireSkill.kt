@@ -10,6 +10,7 @@ val FireSkill = AdvancementsDSL("skyblock", "skill", "fire_skill") {
         display("炎の心") {
             icon = DisplayIcon("minecraft:fire_charge")
             description = "炎魔法見習い"
+            background = "minecraft:textures/block/quartz_block_top.png"
         }
         criteria { criterion("c1") { Criterion.impossible } }
         rewards { experience = 100 }
