@@ -5,15 +5,9 @@ import tech.wakame.skyblock.api.Island
 
 
 object SkyBlockConfig {
-    val islands: MutableMap<String, Island> = mutableMapOf()
-
     fun save(config: Configuration) {
-        islands.forEach { (id, island) ->
-            val path = "islands.$id"
-            config.createSection(path)
-            config.set("$path.name", island.name)
-            config.set("$path.id", island.id)
-            config.set("$path.location", island.location)
+        SkyBlock.instance.islands.forEach { (_, island) ->
+            Island.save(config, island)
         }
     }
 
@@ -27,11 +21,11 @@ object SkyBlockConfig {
         for (id in ids) {
             val path = "islands.$id"
             val island = Island.fromConfig(config, path) ?: continue
-            islands[id] = island
+            SkyBlock.instance.islands[id] = island
         }
     }
 
     fun addIsland(island: Island) {
-        islands[island.id] = island
+        SkyBlock.instance.islands[island.id] = island
     }
 }

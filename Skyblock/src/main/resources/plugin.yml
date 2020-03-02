@@ -14,3 +14,5 @@ commands:
     description: open catalog
   genskill:
     description: generate all skills
+  setportal:
+    description: set selected pos to endportal point

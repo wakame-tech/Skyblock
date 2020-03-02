@@ -1,22 +1,18 @@
 package tech.wakame.skyblock
 
-import net.md_5.bungee.api.ChatColor
+import com.sk89q.worldedit.regions.CuboidRegion
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.HoverEvent
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import tech.wakame.skyblock.SkyBlock.Companion.wePlugin
 import tech.wakame.skyblock.api.*
-import tech.wakame.skyblock.util.Palette
-import tech.wakame.skyblock.util.IUI
-import tech.wakame.skyblock.util.colored
-import tech.wakame.skyblock.util.uuid
+import tech.wakame.skyblock.util.*
 import java.lang.Exception
-import kotlin.math.roundToInt
 
 class SkyBlockCommands(private val plugin: SkyBlock) {
     init {
@@ -25,13 +21,38 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
                 "islands" to CommandExecutor(::islands),
                 "palette" to CommandExecutor(::palette),
                 "catalog" to CommandExecutor(::catalog),
-                "genskill" to CommandExecutor(::generateAdvancements)
+                "genskill" to CommandExecutor(::generateAdvancements),
+                "setportal" to CommandExecutor(::setPortalPoint)
         )
 
         // command executor
         for ((name, executor) in commands) {
             plugin.getCommand(name)?.setExecutor(executor)
         }
+    }
+
+    private fun setPortalPoint(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        if (sender !is Player) return false
+        if (args.size < 3) {
+            sender.sendMessage("/setportal <x> <y> <z>")
+            return false
+        }
+        val (x, y, z) = args.map { it.toInt() }
+        val block = sender.world.getBlockAt(x, y, z)
+        if (block.type != Material.END_PORTAL_FRAME) {
+            sender.sendMessage("portal must be END_PORTAL_FRAME")
+            return false
+        }
+        val (key, island) = Island.whereWithin(block.location) ?: run {
+            sender.sendMessage("island not found")
+            return false
+        }
+
+        SkyBlock.instance.islands[key] = island.copy(portalLocation = block.location)
+
+        sender.sendMessage("has been set to $key's portal")
+
+        return true
     }
 
     private fun generateAdvancements(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
@@ -63,7 +84,6 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
     *   /island load <id>
     * */
     private fun island(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        sender.sendMessage("args: ${args.joinToString(",")}")
         if (sender !is Player) return false
         if (args.isEmpty() || args[0] !in listOf("save", "load") || args.size < 2) {
             sender.sendMessage("/islands [save/load] <id>")
@@ -87,28 +107,29 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
 
                 try {
                     saveSchematic(clipboard, player.editSession(), id)
-                    SkyBlockConfig.addIsland(Island(name, id, location))
-                    sender.sendMessage("new island $name($id) registered!")
+                    val cr = CuboidRegion(clipboard.region.minimumPoint, clipboard.region.maximumPoint)
+                    SkyBlockConfig.addIsland(Island(cr, name, id, location, location))
+                    sender.sendMessage("new island blue{$name}($id) registered!".colored())
                     sender.sendMessage("complete operation")
                 } catch (e: Exception) {
-                    sender.sendMessage("${ChatColor.RED}internal error")
+                    sender.sendMessage("red{internal error}".colored())
                     e.printStackTrace()
                     return false
                 }
             }
             "load" -> {
-                if (!SkyBlockConfig.islands.containsKey(id)) {
-                    sender.sendMessage("island $id not found")
+                if (!SkyBlock.instance.islands.containsKey(id)) {
+                    sender.sendMessage("island blue{$id} not found".colored())
                     return false
                 }
                 // schematic load sample
                 val clipboard = readSchematic(id) ?: run {
-                    sender.sendMessage("${ChatColor.RED}schematic not found")
+                    sender.sendMessage("red{schematic not found}".colored())
                     return false
                 }
 
                 player.paste(clipboard)
-                sender.sendMessage("complete operation")
+                sender.sendMessage("bold{complete operation}".colored())
             }
         }
         return true
@@ -116,18 +137,13 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
 
     private fun islands(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
-        fun Location.round() = Triple(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
-
-        val message = SkyBlockConfig.islands.map { (id, island) ->
-            val (x, y, z) = island.location.round()
+        val message = SkyBlock.instance.islands.values.map { island ->
+            val (x, y, z) = island.location.blockCoords()
             TextComponent().apply {
-                addExtra(TextComponent("%-10s".format("${island.name}($id)")).apply {
-                    isBold = true
-                })
-                addExtra(TextComponent("%-15s".format("($x, $y, $z)")).apply {
+                addExtra(TextComponent("%-10s".format("$island")))
+                addExtra(TextComponent("%-15s".format("yellow{tp here}".colored())).apply {
                     hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(TextComponent("クリックしてテレポート")))
                     clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp @p $x $y $z")
-                    color = ChatColor.YELLOW
                 })
                 addExtra("\n")
             }

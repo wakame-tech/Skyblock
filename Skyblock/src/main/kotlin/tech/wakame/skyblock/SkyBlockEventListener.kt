@@ -1,6 +1,7 @@
 package tech.wakame.skyblock
 
-import de.slikey.effectlib.effect.BleedEffect
+import de.slikey.effectlib.effect.AtomEffect
+import de.slikey.effectlib.effect.FountainEffect
 import fr.minuskube.netherboard.Netherboard
 import fr.mrmicky.fastparticle.FastParticle
 import fr.mrmicky.fastparticle.ParticleType
@@ -15,7 +16,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.*
-import org.bukkit.persistence.PersistentDataType
+import tech.wakame.skyblock.api.Island
 import tech.wakame.skyblock.api.convertChestToMerchantRecipes
 import tech.wakame.skyblock.util.*
 
@@ -29,6 +30,8 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
         event.player.sendTitle("yellow{SkyBlock(仮称)}".colored(), plugin.description.version)
         Netherboard.instance().createBoard(event.player, "ステータス")
 
+        val board = Netherboard.instance().getBoard(event.player)
+        board.set("mp", 50)
         // event.player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 30.0
     }
 
@@ -37,40 +40,59 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
         val use = event.player.inventory.itemInMainHand
         val key = NamespacedKey(plugin, "palette")
         val customMeta = use.getTag(key) ?: return
-        val meta = PlayerMetaData(event.player, plugin)
-        if (meta.get()) {
+        val meta = PlayerMetaData(plugin)
+        if (meta.inCoolTime(event.player)) {
             // in cool time
+            event.player.sendMessage("in cool time")
             return
         }
         if (!use.hasItemMeta()) {
             return
         }
-        event.player.sendMessage("$customMeta")
 
-        val particle = when(customMeta) {
-            "fire" -> ParticleType.FLAME
-            "wind" -> ParticleType.EXPLOSION_NORMAL
-            "ice" -> ParticleType.SNOW_SHOVEL
-            "heal" -> ParticleType.SPELL
+        when(customMeta) {
+            "fire" -> {
+                // FastParticle.spawnParticle(event.player, ParticleType.FLAME, event.player.location.overHead(), 100)
+                AtomEffect(plugin.effectManager).apply {
+                    entity = event.player
+                    callback = Runnable {
+                        event.player.sendMessage("end")
+                    }
+                    iterations = 20 * 2
+                }.start()
+                event.player.sendMessage("yellow{${event.player.displayName}} は ${use.itemMeta!!.displayName} を使った".colored())
+            }
+            "wind" -> {
+//                FastParticle.spawnParticle(event.player, ParticleType.EXPLOSION_HUGE, event.player.location, 100)
+//                event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
+
+                FountainEffect(plugin.effectManager).apply {
+                    entity = event.player
+                    callback = Runnable {
+                        event.player.sendMessage("end")
+                    }
+                    iterations = 20 * 2
+                }.start()
+                event.player.sendMessage("yellow{${event.player.displayName}} は ${use.itemMeta!!.displayName} を使った".colored())
+            }
+            "ice" -> {
+                FastParticle.spawnParticle(event.player, ParticleType.SNOWBALL, event.player.location.overHead(), 100)
+                event.player.sendMessage("yellow{${event.player.displayName}} は ${use.itemMeta!!.displayName} を使った".colored())
+            }
+            "heal" -> {
+                FastParticle.spawnParticle(event.player, ParticleType.SPELL, event.player.location.overHead(), 100)
+                event.player.sendMessage("yellow{${event.player.displayName}} は ${use.itemMeta!!.displayName} を使った".colored())
+            }
             else -> return
         }
 
-        event.player.sendMessage("${event.player.displayName} は ${use.itemMeta!!.displayName} を使った")
+        val originalName = use.itemMeta!!.displayName
+        use.renamed("$originalName gray{[使用不可]}")
 
-        // TODO
-        FastParticle.spawnParticle(event.player, particle, event.player.location, 50)
-
-//        val bleedEffect = BleedEffect(plugin.effectManager)
-//        bleedEffect.entity = event.player
-//
-//        bleedEffect.callback = Runnable {
-//            event.player.sendMessage("end")
-//        }
-//
-//        bleedEffect.iterations = 10 * 20
-//        bleedEffect.start()
-
-        meta.set()
+        meta.coolTime(event.player) {
+            use.renamed(originalName)
+            event.player.sendMessage("end cool time")
+        }
     }
 
     @EventHandler
@@ -97,20 +119,10 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
         val use = event.player.inventory.itemInMainHand
         if (use.type != Material.ENDER_EYE) return
         val block = event.clickedBlock ?: return
-        // unfilled: 0 - 3, filled: 4 - 7
-        val eyeUnfilled = block.data < 4.toByte()
-        if (block.type == Material.END_PORTAL_FRAME && eyeUnfilled) {
-            event.player.sendTitle("yellow{島を攻略した!!}".colored(), "攻略率 1 / 1")
+        if (block.filledEnderEye() == false) {
+            Island.capture(block.location, event.player)
         }
     }
-
-//    @EventHandler
-//    fun onPlayerMove(event: PlayerMoveEvent) {
-//        val board = Netherboard.instance().getBoard(event.player)
-//        board.set("x", event.player.location.blockX)
-//        board.set("y", event.player.location.blockY)
-//        board.set("z", event.player.location.blockZ)
-//    }
 
     @EventHandler
     fun onPlayerItemDrop(event: PlayerDropItemEvent) {
@@ -142,7 +154,11 @@ class SkyBlockEventListener(private val plugin: SkyBlock) : Listener {
     fun onPlayerSwapHandItemsEvent(event: PlayerSwapHandItemsEvent) {
         Palette.store.getOrPut(event.player.uuid) { Palette() }.also {
             it.update(event.player)
-            event.player.sendMessage("toggle palette")
+            if (it.visible) {
+                event.player.sendMessage("Palette: bold{yellow{ON}}".colored())
+            } else {
+                event.player.sendMessage("Palette: bold{OFF}".colored())
+            }
         }
         event.isCancelled = true
     }

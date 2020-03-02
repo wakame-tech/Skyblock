@@ -1,10 +1,9 @@
 package tech.wakame.skyblock.util
 
+import com.sk89q.worldedit.math.BlockVector3
 import net.md_5.bungee.api.chat.TextComponent
-import org.bukkit.ChatColor
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.Server
+import org.bukkit.*
+import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -16,7 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import tech.wakame.skyblock.SkyBlock
 
 fun Server.broadcast(vararg message: String) {
-    this.spigot().broadcast(*message.map { TextComponent(it.colored()) }.toTypedArray())
+    this.spigot().broadcast(*message.map { TextComponent("$it\n".colored()) }.toTypedArray())
 }
 
 /*
@@ -35,6 +34,7 @@ fun String.colored(): String {
             "blue\\{" to ChatColor.BLUE,
             "white\\{" to ChatColor.WHITE,
             "bold\\{" to ChatColor.BOLD,
+            "gray\\{" to ChatColor.GRAY,
             "\\}" to ChatColor.RESET
     ))
 }
@@ -67,7 +67,7 @@ fun ItemStack.effected(effect: PotionEffect): ItemStack {
 
 fun ItemStack.enchanted(enchant: Enchantment, level: Int): ItemStack {
     return this.apply {
-        itemMeta = itemMeta?.apply {
+        if (enchant.canEnchantItem(this)) {
             addEnchantment(enchant, level)
         }
     }
@@ -85,23 +85,43 @@ fun ItemStack.getTag(key: NamespacedKey): String? {
     return this.itemMeta?.persistentDataContainer?.get<String, String>(key, PersistentDataType.STRING)
 }
 
-class PlayerMetaData(private val player: Player, private val plugin: SkyBlock) {
-    private val KEY = "PlayerInteractEvent"
+fun Location.toBlockVector3(): BlockVector3 {
+    return BlockVector3.at(blockX, blockY, blockZ)
+}
 
-    fun set() {
-        setMetaData(true)
+fun Location.simple() = "($blockX, $blockY, $blockZ)"
+
+fun Location.blockCoords() = Triple(blockX, blockY, blockZ)
+
+fun Location.overHead() = this.add(0.0, 2.0, 0.0)
+
+fun Block.filledEnderEye(): Boolean? {
+    // unfilled: 0 - 3, filled: 4 - 7
+    if (this.type != Material.END_PORTAL_FRAME) {
+        return null
+    }
+    return this.data >= 4.toByte()
+}
+
+class PlayerMetaData(private val plugin: SkyBlock) {
+    private val coolTimeKey = "PlayerInteractEvent"
+
+    fun coolTime(player: Player, callback: () -> Unit) {
+        player.sendMessage("start cool time")
+        setMetaData(player, coolTimeKey, true)
         object: BukkitRunnable() {
             override fun run() {
-                setMetaData(false)
+                callback()
+                setMetaData(player, coolTimeKey, false)
             }
-        }.runTaskLater(plugin, 1)
+        }.runTaskLater(plugin, 20 * 1)
     }
 
-    private fun setMetaData(flag: Boolean) {
-        player.setMetadata(KEY, FixedMetadataValue(plugin, flag))
-    }
+    fun inCoolTime(player: Player) = player.getMetadata(coolTimeKey).firstOrNull()?.asBoolean() ?: false
 
-    fun get() = player.getMetadata(KEY).firstOrNull()?.asBoolean() ?: false
+    private fun setMetaData(player: Player, key: String, value: Any) {
+        player.setMetadata(key, FixedMetadataValue(plugin, value))
+    }
 }
 
 // iterated to column

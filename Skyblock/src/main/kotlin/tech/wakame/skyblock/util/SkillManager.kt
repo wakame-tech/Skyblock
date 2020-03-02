@@ -36,9 +36,9 @@ class SkillManager(private val plugin: SkyBlock) {
 
     fun status() {
         plugin.server.broadcast(
-                "[SkillManager] there are ${ChatColor.YELLOW}${skills.size}${ChatColor.RESET} skills",
+                "[SkillManager] there are yellow{${skills.size}} skills".colored(),
                 *skills.map { skill ->
-                    "- ${ChatColor.YELLOW}${skill.name}"
+                    "- bold{yellow{${skill.name}}}".colored()
                 }.toTypedArray()
         )
     }

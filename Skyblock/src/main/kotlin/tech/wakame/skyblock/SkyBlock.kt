@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
+import tech.wakame.skyblock.api.Island
 import tech.wakame.skyblock.util.SkillManager
 import tech.wakame.skyblock.util.broadcast
 import java.lang.Exception
@@ -14,6 +15,7 @@ import java.lang.Exception
 class SkyBlock : JavaPlugin() {
     val skillManager: SkillManager = SkillManager(this)
     val effectManager: EffectManager = EffectManager(this)
+    val islands: MutableMap<String, Island> = mutableMapOf()
     lateinit var dataPackPath: String
 
     override fun onEnable() { // Plugin startup logic
@@ -22,15 +24,15 @@ class SkyBlock : JavaPlugin() {
         SkyBlockCommands(this)
 
         // bind WorldEdit
-        val plugin = server.pluginManager.getPlugin("WorldEdit") as? WorldEditPlugin
-        if (plugin == null) {
+        val we = server.pluginManager.getPlugin("WorldEdit") as? WorldEditPlugin
+        if (we == null) {
             logger.warning("need dependency WorldEdit")
             server.broadcast("red{need dependency WorldEdit}")
             throw Exception("need dependency WorldEdit")
         }
 
         skillManager.status()
-        wePlugin = plugin
+        wePlugin = we
         instance = this
 
         // datapacks/<datapack>
@@ -72,7 +74,7 @@ class SkyBlock : JavaPlugin() {
                     addExtra(link)
                 },
                 TextComponent("\n"),
-                TextComponent("${SkyBlockConfig.islands.size} islands loaded"),
+                TextComponent("${islands.size} islands loaded"),
                 TextComponent("\n")
         )
     }
