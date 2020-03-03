@@ -1,5 +1,6 @@
 package tech.wakame.skyblock
 
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard
 import com.sk89q.worldedit.regions.CuboidRegion
 import net.md_5.bungee.api.chat.ClickEvent
 import net.md_5.bungee.api.chat.HoverEvent
@@ -85,19 +86,26 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
     * */
     private fun island(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
-        if (args.isEmpty() || args[0] !in listOf("save", "load") || args.size < 2) {
-            sender.sendMessage("/islands [save/load] <id>")
+        fun help(): Boolean {
+            sender.sendMessage("/islands (save/load/saveall/loadall) [id]")
             return false
         }
 
-        val player = wePlugin.wrapPlayer(sender)
-        val id = args[1]
+        if (args.isEmpty() || args[0] !in listOf("save", "load", "saveall", "loadall")) {
+            return help()
+        }
 
+        val player = wePlugin.wrapPlayer(sender)
 
         when (args[0]) {
             "save" -> {
+                if (args.size < 2) {
+                    return help()
+                }
+
                 val clipboard = player.selectRegion()
                 val location = sender.location
+                val id = args[1]
                 val name = if (args.size >= 4) args[3] else id
 
                 if (clipboard == null) {
@@ -117,7 +125,22 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
                     return false
                 }
             }
+            "saveall" -> {
+                sender.sendMessage("try to save bold{yellow{${plugin.islands.size}}} islands".colored())
+
+                plugin.islands.forEach { (id, island) ->
+                    sender.sendMessage("saving bold{yellow{${island}}}".colored())
+                    val clipboard = BlockArrayClipboard(island.region)
+                    saveSchematic(clipboard, player.editSession(), id)
+                    sender.sendMessage("saved bold{yellow{${island}}}!".colored())
+                }
+            }
             "load" -> {
+                if (args.size < 2) {
+                    return help()
+                }
+
+                val id = args[1]
                 if (!SkyBlock.instance.islands.containsKey(id)) {
                     sender.sendMessage("island blue{$id} not found".colored())
                     return false
@@ -130,6 +153,20 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
 
                 player.paste(clipboard)
                 sender.sendMessage("bold{complete operation}".colored())
+            }
+            "loadall" -> {
+                sender.sendMessage("try to load bold{yellow{${plugin.islands.size}}} islands".colored())
+
+                plugin.islands.forEach { (id, island) ->
+                    sender.sendMessage("loading bold{yellow{${island}}}".colored())
+                    val clipboard = readSchematic(id)
+                    if (clipboard == null) {
+                        sender.sendMessage("red{failed to read $id}".colored())
+                    } else {
+                        player.paste(clipboard)
+                        sender.sendMessage("loaded bold{yellow{${island}}}!".colored())
+                    }
+                }
             }
         }
         return true

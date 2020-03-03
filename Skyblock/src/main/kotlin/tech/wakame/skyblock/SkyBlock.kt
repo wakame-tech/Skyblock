@@ -18,10 +18,8 @@ class SkyBlock : JavaPlugin() {
     val islands: MutableMap<String, Island> = mutableMapOf()
     lateinit var dataPackPath: String
 
-    override fun onEnable() { // Plugin startup logic
-        SkyBlockConfig.load(config)
-        SkyBlockEventListener(this)
-        SkyBlockCommands(this)
+    override fun onEnable() {
+        instance = this
 
         // bind WorldEdit
         val we = server.pluginManager.getPlugin("WorldEdit") as? WorldEditPlugin
@@ -30,10 +28,13 @@ class SkyBlock : JavaPlugin() {
             server.broadcast("red{need dependency WorldEdit}")
             throw Exception("need dependency WorldEdit")
         }
+        wePlugin = we
+
+        SkyBlockConfig.load(config)
+        SkyBlockEventListener(this)
+        SkyBlockCommands(this)
 
         skillManager.status()
-        wePlugin = we
-        instance = this
 
         // datapacks/<datapack>
         val dataPackFolder = dataFolder.resolve("../../${server.worlds[0].name}/datapacks")

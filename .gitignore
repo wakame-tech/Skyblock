@@ -3,14 +3,11 @@
 
 # https://blog.s-giken.net/393.html
 !/data/server.properties
-
 !/data/plugins/
 /data/plugins/*
 !/data/plugins/WorldEdit
 /data/plugins/WorldEdit/*
 !/data/plugins/WorldEdit/schematics
-
-.mcmeta
 
 # Gradle Project
 .gradle
@@ -22,6 +19,3 @@ logs/
 gradle-app.setting
 !gradle-wrapper.jar
 .gradletasknamecache
-
-# Other
-scripts/env.sh
