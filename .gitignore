@@ -8,6 +8,9 @@
 !/data/plugins/WorldEdit
 /data/plugins/WorldEdit/*
 !/data/plugins/WorldEdit/schematics
+!/data/plugins/SkyBlock
+/data/plugins/SkyBlock/*
+!/data/plugins/SkyBlock/config.yml
 
 # Gradle Project
 .gradle

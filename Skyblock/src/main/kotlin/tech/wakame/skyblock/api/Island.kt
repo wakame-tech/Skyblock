@@ -30,13 +30,9 @@ data class Island(val region: CuboidRegion, val name: String, val id: String, va
             val id = config.getString("$base.id")  ?: return null
             val location = config.getLocation("$base.location")  ?: return null
             val portalLocation = config.getLocation("$base.portalLocation")  ?: return null
-//            val pos1 = config.getBlockVector3("$base.pos1") ?: return null
-//            val pos2 = config.getBlockVector3("$base.pos2") ?: return null
-            // restore
-            val clipboard = readSchematic(id) ?: return null
-            val region = CuboidRegion(clipboard.minimumPoint, clipboard.maximumPoint)
-
-            // val region = CuboidRegion(pos1.toBlockVector3(), pos2.toBlockVector3())
+            val pos1 = config.getBlockVector3("$base.pos1") ?: return null
+            val pos2 = config.getBlockVector3("$base.pos2") ?: return null
+            val region = CuboidRegion(pos1, pos2)
             return Island(region, name, id, location, portalLocation)
         }
 

@@ -1,0 +1,331 @@
+islands:
+  main:
+    name: メイン島
+    id: main
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: 11.768022284470142
+      y: 22.0
+      z: 30.446409074939684
+      pitch: -18.600489
+      yaw: -158.31934
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: 8.0
+      y: 54.0
+      z: 8.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -46
+      y: 21
+      z: -46
+    pos2:
+      x: 62
+      y: 86
+      z: 62
+  bed:
+    name: ベッド島
+    id: bed
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: -32.4018257401663
+      y: 38.0
+      z: 106.673136344478
+      pitch: 25.79931
+      yaw: -255.84961
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: -42.0
+      y: 32.0
+      z: 130.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -47
+      y: 29
+      z: 98
+    pos2:
+      x: -29
+      y: 38
+      z: 133
+  hatake:
+    name: 畑島
+    id: hatake
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: 6.222668876186804
+      y: 34.0
+      z: 96.683814870751
+      pitch: 24.749367
+      yaw: -221.5332
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: -2.0
+      y: 28.0
+      z: 87.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -10
+      y: 27
+      z: 77
+    pos2:
+      x: 6
+      y: 33
+      z: 97
+  gohan:
+    name: ごはん島
+    id: gohan
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: 55.09098610850328
+      y: 33.0
+      z: 71.01797260608912
+      pitch: 20.84923
+      yaw: -359.03027
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: 54.0
+      y: 44.0
+      z: 81.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: 45
+      y: 32
+      z: 71
+    pos2:
+      x: 64
+      y: 55
+      z: 90
+  obake:
+    name: お化け屋敷島
+    id: obake
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: 118.26897835729547
+      y: 56.0
+      z: 23.884148247344672
+      pitch: -9.7507305
+      yaw: -136.61621
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: 141.0
+      y: 56.0
+      z: -2.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: 118
+      y: 54
+      z: -25
+    pos2:
+      x: 163
+      y: 91
+      z: 23
+  yokan:
+    name: 洋館島
+    id: yokan
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: 3.997264105892937
+      y: 54.0
+      z: 128.19073014702485
+      pitch: -20.250881
+      yaw: -89.0918
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: 33.0
+      y: 63.0
+      z: 127.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: 1
+      y: 51
+      z: 103
+    pos2:
+      x: 38
+      y: 74
+      z: 147
+  tokei:
+    name: 目覚まし時計島
+    id: tokei
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: -60.8898891082393
+      y: 57.0
+      z: 77.31328204531246
+      pitch: 6.449187
+      yaw: -1.6552734
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: -62.0
+      y: 37.0
+      z: 80.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -75
+      y: 36
+      z: 75
+    pos2:
+      x: -48
+      y: 67
+      z: 87
+  ike:
+    name: 池島
+    id: ike
+    location: &id001
+      ==: org.bukkit.Location
+      world: void
+      x: -102.8655946656212
+      y: 53.0
+      z: 30.508589052602957
+      pitch: 10.349199
+      yaw: -273.90625
+    portalLocation: *id001
+    pos1:
+      x: -118
+      y: 49
+      z: 19
+    pos2:
+      x: -101
+      y: 56
+      z: 37
+  take:
+    name: 竹島
+    id: take
+    location: &id002
+      ==: org.bukkit.Location
+      world: void
+      x: -68.0437500104308
+      y: 42.0
+      z: -25.59214790654503
+      pitch: 4.1999903
+      yaw: -93.03027
+    portalLocation: *id002
+    pos1:
+      x: -68
+      y: 40
+      z: -26
+    pos2:
+      x: -68
+      y: 223
+      z: -26
+  turi:
+    name: 釣り堀島
+    id: turi
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: 0.9908523214112283
+      y: 32.0
+      z: -81.6925665136096
+      pitch: 12.750031
+      yaw: -301.34277
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: -8.0
+      y: 28.0
+      z: -78.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -22
+      y: 28
+      z: -86
+    pos2:
+      x: 5
+      y: 34
+      z: -70
+  bow:
+    name: 弓島
+    id: bow
+    location: &id003
+      ==: org.bukkit.Location
+      world: void
+      x: -3.7624612435626728
+      y: 66.0
+      z: -107.44818558479797
+      pitch: 6.900018
+      yaw: -88.23828
+    portalLocation: *id003
+    pos1:
+      x: -14
+      y: 48
+      z: -108
+    pos2:
+      x: 7
+      y: 67
+      z: -108
+  panjan:
+    name: パンジャン島
+    id: panjan
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: -44.35002365202402
+      y: 59.0
+      z: -103.32973718147213
+      pitch: 13.800034
+      yaw: -262.6787
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: -48.0
+      y: 55.0
+      z: -104.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -55
+      y: 48
+      z: -115
+    pos2:
+      x: -41
+      y: 65
+      z: -94
+  jinja:
+    name: 神社島
+    id: jinja
+    location:
+      ==: org.bukkit.Location
+      world: void
+      x: -170.44492343124193
+      y: 117.0
+      z: 49.93298636918438
+      pitch: -16.94988
+      yaw: -15.361328
+    portalLocation:
+      ==: org.bukkit.Location
+      world: void
+      x: -154.0
+      y: 119.0
+      z: 94.0
+      pitch: 0.0
+      yaw: 0.0
+    pos1:
+      x: -195
+      y: 101
+      z: 20
+    pos2:
+      x: -125
+      y: 151
+      z: 117

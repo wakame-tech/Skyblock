@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import tech.wakame.skyblock.api.Island
 import tech.wakame.skyblock.util.SkillManager
 import tech.wakame.skyblock.util.broadcast
+import tech.wakame.skyblock.util.colored
 import java.lang.Exception
 
 class SkyBlock : JavaPlugin() {
@@ -34,8 +35,6 @@ class SkyBlock : JavaPlugin() {
         SkyBlockEventListener(this)
         SkyBlockCommands(this)
 
-        skillManager.status()
-
         // datapacks/<datapack>
         val dataPackFolder = dataFolder.resolve("../../${server.worlds[0].name}/datapacks")
         if (!dataPackFolder.exists()) {
@@ -50,6 +49,10 @@ class SkyBlock : JavaPlugin() {
         server.spigot().broadcast(*welcomeMessage())
 
         skillManager.status()
+
+        server.onlinePlayers.forEach { player ->
+            player.sendTitle("yellow{SkyBlock(仮称)}".colored(), description.version)
+        }
     }
 
     override fun onDisable() { // Plugin shutdown logic
