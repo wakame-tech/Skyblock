@@ -12,7 +12,7 @@ import tech.wakame.skyblock.resources.items.weapons
 import tech.wakame.skyblock.resources.skills.FireSkill
 import kotlin.math.ceil
 
-class IUI(private val content: List<ItemStack>): InventoryHolder {
+class IUI(private val content: MutableList<ItemStack>): InventoryHolder {
     enum class FilterType {
         All, Potion, Weapon, KeyItem
     }
@@ -59,6 +59,10 @@ class IUI(private val content: List<ItemStack>): InventoryHolder {
 
     fun open(player: Player) {
         player.openInventory(inventory)
+    }
+
+    fun add(item: ItemStack) {
+        content.add(item)
     }
 
     fun onClick(event: InventoryClickEvent) {
@@ -112,6 +116,6 @@ class IUI(private val content: List<ItemStack>): InventoryHolder {
     }
 
     companion object {
-        val catalog = IUI(weapons + potions + FireSkill.catalog())
+        val catalog = IUI((weapons + potions + FireSkill.catalog()).toMutableList())
     }
 }

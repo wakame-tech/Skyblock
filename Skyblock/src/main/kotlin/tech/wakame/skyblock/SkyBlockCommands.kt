@@ -75,7 +75,15 @@ class SkyBlockCommands(private val plugin: SkyBlock) {
     private fun catalog(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
 
-        IUI.catalog.open(sender)
+        // /catalog import
+        if (args.size == 1 && args[0] == "import") {
+            val item = sender.inventory.itemInMainHand
+            IUI.catalog.add(item)
+            sender.sendMessage("$item has been added to catalog!!")
+        } else {
+            IUI.catalog.open(sender)
+        }
+
         return true
     }
 

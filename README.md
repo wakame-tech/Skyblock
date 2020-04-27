@@ -26,6 +26,11 @@ docker-compose exec spigot-server mc_log
 ## 🔥 Build
 require [WorldEdit](https://www.curseforge.com/minecraft/bukkit-plugins/worldedit/files) in `plugins` Folder.
 
+## ✨ Deploy
+```
+scp Skyblock/build/libs/Skyblock-v0.1-SNAPSHOT.jar <deploy-address>:~
+```
+
 ```bash
 cd Skyblock
 ./gradlew build

@@ -1,5 +1,6 @@
 package tech.wakame.skyblock
 
+import java.util.Date
 import com.sk89q.worldedit.bukkit.WorldEditPlugin
 import de.slikey.effectlib.EffectManager
 import net.md_5.bungee.api.ChatColor
@@ -12,6 +13,7 @@ import tech.wakame.skyblock.util.SkillManager
 import tech.wakame.skyblock.util.broadcast
 import tech.wakame.skyblock.util.colored
 import java.lang.Exception
+import java.text.SimpleDateFormat
 
 class SkyBlock : JavaPlugin() {
     val skillManager: SkillManager = SkillManager(this)
@@ -50,8 +52,11 @@ class SkyBlock : JavaPlugin() {
 
         skillManager.status()
 
+        val mainTitle = "yellow{SkyBlock(仮称)}".colored()
+        val subTitle = "${description.version}(${SimpleDateFormat("yyyyMMdd").format(Date())})"
+
         server.onlinePlayers.forEach { player ->
-            player.sendTitle("yellow{SkyBlock(仮称)}".colored(), description.version)
+            player.sendTitle(mainTitle, subTitle)
         }
     }
 

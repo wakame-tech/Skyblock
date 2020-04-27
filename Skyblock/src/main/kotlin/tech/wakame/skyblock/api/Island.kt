@@ -3,7 +3,6 @@ package tech.wakame.skyblock.api
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.regions.CuboidRegion
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.configuration.Configuration
 import org.bukkit.entity.Player
 import tech.wakame.skyblock.SkyBlock

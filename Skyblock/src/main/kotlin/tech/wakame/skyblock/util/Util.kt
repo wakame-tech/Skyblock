@@ -29,12 +29,15 @@ fun String.colored(): String {
     return this.replace(mapOf(
             "black\\{" to ChatColor.WHITE,
             "red\\{" to ChatColor.RED,
+            "aqua\\{" to ChatColor.AQUA,
             "green\\{" to ChatColor.GREEN,
             "yellow\\{" to ChatColor.YELLOW,
             "blue\\{" to ChatColor.BLUE,
             "white\\{" to ChatColor.WHITE,
             "bold\\{" to ChatColor.BOLD,
+            "italic\\{" to ChatColor.ITALIC,
             "gray\\{" to ChatColor.GRAY,
+            "-\\{" to ChatColor.STRIKETHROUGH,
             "\\}" to ChatColor.RESET
     ))
 }
@@ -53,7 +56,7 @@ fun ItemStack.renamed(name: String): ItemStack {
 
 fun ItemStack.described(describe: String): ItemStack {
     return this.apply {
-        itemMeta = itemMeta?.apply { lore = describe.colored().split("\n") }
+        itemMeta = itemMeta?.apply { lore = describe.colored().split("\n").map { "$it\n" } }
     }
 }
 
@@ -65,7 +68,15 @@ fun ItemStack.effected(effect: PotionEffect): ItemStack {
     }
 }
 
-fun ItemStack.enchanted(enchant: Enchantment, level: Int): ItemStack {
+fun ItemStack.unbreakable(): ItemStack {
+    return this.apply {
+        itemMeta = itemMeta?.apply {
+            isUnbreakable = true
+        }
+    }
+}
+
+fun ItemStack.enchanted(enchant: Enchantment, level: Int = 1): ItemStack {
     return this.apply {
         if (enchant.canEnchantItem(this)) {
             addEnchantment(enchant, level)
